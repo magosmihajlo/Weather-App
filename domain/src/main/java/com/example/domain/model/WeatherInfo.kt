@@ -1,0 +1,30 @@
+package com.example.domain.model
+
+data class WeatherInfo(
+    val temperatureCelsius: Double,
+    val feelsLikeCelsius: Double,
+    val minTemperatureCelsius: Double,
+    val maxTemperatureCelsius: Double,
+    val humidityPercent: Int,
+    val pressureHPa: Int,
+    val seaLevelPressureHPa: Int?,
+    val groundLevelPressureHPa: Int?,
+    val windSpeedKmh: Double,
+    val windDirectionDegrees: Int,
+    val description: String,
+    val iconCode: String,
+    val cloudinessPercent: Int,
+    val visibilityMeters: Int,
+    val countryCode: String,
+    val sunriseTime: Long,
+    val sunsetTime: Long,
+    val cityId: Int,
+    val cityName: String,
+    val timestampMillis: Long,
+    val latitude: Double,
+    val longitude: Double,
+    val rainVolumeLast1hMm: Double?,
+    val rainVolumeLast3hMm: Double?,
+    val snowVolumeLast1hMm: Double?,
+    val snowVolumeLast3hMm: Double?
+)

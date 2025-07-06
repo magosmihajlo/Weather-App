@@ -1,0 +1,18 @@
+package com.example.data.repository
+
+import com.example.data.mapper.toDomain
+import com.example.data.remote.WeatherApiService
+import com.example.domain.model.WeatherInfo
+import com.example.domain.repository.WeatherRepository
+import javax.inject.Inject
+import javax.inject.Named
+
+class WeatherRepositoryImpl @Inject constructor(
+    private val api: WeatherApiService,
+    @Named("api_key") private val apiKey: String
+) : WeatherRepository {
+
+    override suspend fun getCurrentWeather(city: String): WeatherInfo {
+        return api.getCurrentWeather(city = city, apiKey = apiKey).toDomain()
+    }
+}
