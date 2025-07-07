@@ -1,11 +1,13 @@
 package com.example.di.module
 
+import com.example.domain.repository.AppSettingsRepository
 import com.example.domain.repository.RecentCityRepository
 import com.example.domain.repository.UnitConversionRepository
 import com.example.domain.repository.WeatherRepository
 import com.example.domain.usecase.ConvertPressureUseCase
 import com.example.domain.usecase.ConvertTemperatureUseCase
 import com.example.domain.usecase.ConvertWindSpeedUseCase
+import com.example.domain.usecase.GetAppSettingsUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
 import com.example.domain.usecase.SaveRecentCityUseCase
@@ -60,6 +62,13 @@ object UseCaseModule {
     fun provideConvertPressureUseCase(
         repo: UnitConversionRepository
     ): ConvertPressureUseCase = ConvertPressureUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun provideGetAppSettingsUseCase(
+        appSettingsRepository: AppSettingsRepository
+    ): GetAppSettingsUseCase = GetAppSettingsUseCase(appSettingsRepository)
+
 }
 
 

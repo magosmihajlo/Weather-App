@@ -1,17 +1,9 @@
 package com.example.presentation.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.presentation.state.WeatherUiState
 import com.example.presentation.uimodel.WeatherDisplayData
 import com.example.presentation.viewmodel.WeatherViewModel
 
@@ -30,33 +23,43 @@ fun DetailsScreen(
     navController: NavController,
     viewModel: WeatherViewModel = hiltViewModel()
 ) {
-    val weatherData by viewModel.weatherDisplayData.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val uiState: WeatherUiState<WeatherDisplayData> by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Detailed Weather") },
-
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         },
         content = { paddingValues ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator()
-                } else if (errorMessage != null) {
-                    Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
-                } else if (weatherData != null) {
-                    DetailedWeatherContent(weatherData!!)
-                } else {
-                    Text("No detailed weather data available. Please check the main screen.")
+                when (uiState) {
+                    is WeatherUiState.Loading -> {
+                        CircularProgressIndicator()
+                    }
+                    is WeatherUiState.Error -> {
+                        Text(
+                            text = (uiState as WeatherUiState.Error).message,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    is WeatherUiState.Success -> {
+                        DetailedWeatherContent((uiState as WeatherUiState.Success).data)
+                    }
+                    WeatherUiState.Empty -> {
+                        Text("No detailed weather data available. Please check the main screen.")
+                    }
                 }
             }
         }

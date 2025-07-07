@@ -4,30 +4,31 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherInfo
-import com.example.domain.repository.AppSettingsRepository
+import com.example.domain.usecase.GetAppSettingsUseCase
 import com.example.presentation.uimodel.WeatherDisplayData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import jakarta.inject.Inject
 import com.example.domain.usecase.SaveRecentCityUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
+import com.example.presentation.state.WeatherUiState
 import com.example.presentation.utils.CityNameResolver
 import com.example.presentation.utils.LocationProvider
 import com.example.presentation.utils.RecentCityUiMapper
 import com.example.presentation.utils.WeatherUiMapper
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
+    private val getAppSettingsUseCase: GetAppSettingsUseCase,
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val appSettingsRepository: AppSettingsRepository,
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getRecentCitiesUseCase: GetRecentCitiesUseCase,
     private val weatherUiMapper: WeatherUiMapper,
@@ -37,50 +38,72 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _rawWeatherInfo = MutableStateFlow<WeatherInfo?>(null)
+    private val _currentCity = MutableStateFlow("Belgrade") // Default city
 
-    val weatherDisplayData = _rawWeatherInfo
-        .filterNotNull()
-        .combine(appSettingsRepository.appSettingsFlow) { rawWeather, settings ->
-            weatherUiMapper.map(rawWeather, settings)
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
+    val uiState = _uiState.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage = _errorMessage.asStateFlow()
+    private val _recentCitiesUiState = MutableStateFlow<WeatherUiState<List<WeatherDisplayData>>>(WeatherUiState.Empty)
+    val recentCitiesUiState = _recentCitiesUiState.asStateFlow()
 
-    private val _currentCity = MutableStateFlow("")
-    val currentCity = _currentCity.asStateFlow()
 
     private val _requestLocationPermission = MutableStateFlow(false)
     val requestLocationPermission = _requestLocationPermission.asStateFlow()
 
-    private val _recentCitiesDisplayData = MutableStateFlow<List<WeatherDisplayData>>(emptyList())
-    val recentCitiesDisplayData = _recentCitiesDisplayData.asStateFlow()
-
     init {
+        observeAppSettings()
+        observeRecentCities()
+
         viewModelScope.launch {
-            appSettingsRepository.appSettingsFlow.collect { settings ->
-                if (settings.locationEnabled) {
-                    if (locationProvider.hasLocationPermission()) {
-                        fetchCurrentLocationWeather()
-                    } else {
-                        _requestLocationPermission.value = true
-                        fetchWeatherByCityName(_currentCity.value)
-                    }
+            combine(
+                _rawWeatherInfo.filterNotNull(),
+                getAppSettingsUseCase()
+            ) { raw, settings ->
+                weatherUiMapper.map(raw, settings)
+            }.collect { displayData ->
+                _uiState.value = WeatherUiState.Success(displayData)
+            }
+        }
+    }
+
+    private fun observeAppSettings() {
+        viewModelScope.launch {
+            getAppSettingsUseCase()
+                .map { it.locationEnabled }
+                .distinctUntilChanged()
+                .collect { locationEnabled ->
+                    handleLocationEnabledChange(locationEnabled)
+                }
+        }
+    }
+
+    private fun observeRecentCities() {
+        viewModelScope.launch {
+            _recentCitiesUiState.value = WeatherUiState.Loading
+            getRecentCitiesUseCase().collect { recentCities ->
+                if (recentCities.isEmpty()) {
+                    _recentCitiesUiState.value = WeatherUiState.Empty
                 } else {
-                    fetchWeatherByCityName(_currentCity.value)
+                    val settings = getAppSettingsUseCase().first()
+                    val displayData = recentCityUiMapper.map(recentCities, settings)
+                    _recentCitiesUiState.value = WeatherUiState.Success(displayData)
                 }
             }
         }
+    }
 
-        viewModelScope.launch {
-            getRecentCitiesUseCase().collect { recentCities ->
-                val settings = appSettingsRepository.appSettingsFlow.first()
-                _recentCitiesDisplayData.value = recentCityUiMapper.map(recentCities, settings)
+
+    private fun handleLocationEnabledChange(locationEnabled: Boolean) {
+        if (locationEnabled) {
+            if (locationProvider.hasLocationPermission()) {
+                fetchCurrentLocationWeather()
+            } else {
+                _requestLocationPermission.value = true
+                fetchWeatherByCityName(_currentCity.value)
             }
+        } else {
+            fetchWeatherByCityName(_currentCity.value)
         }
     }
 
@@ -89,15 +112,14 @@ class WeatherViewModel @Inject constructor(
             _currentCity.value = cityName
             fetchWeatherByCityName(cityName)
         } else {
-            _errorMessage.value = "City name cannot be empty."
+            _uiState.value = WeatherUiState.Error("City name cannot be empty.")
         }
     }
 
     @SuppressLint("MissingPermission")
     fun fetchCurrentLocationWeather() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
+            _uiState.value = WeatherUiState.Loading
             _requestLocationPermission.value = false
 
             val location = locationProvider.getCurrentLocation()
@@ -107,26 +129,24 @@ class WeatherViewModel @Inject constructor(
                     _currentCity.value = city
                     fetchWeatherByCityName(city)
                 } else {
-                    _errorMessage.value = "Could not determine city from location."
+                    _uiState.value = WeatherUiState.Error("Could not determine city from location.")
                     fetchWeatherByCityName(_currentCity.value)
                 }
             } else {
-                _errorMessage.value = "Could not get location."
+                _uiState.value = WeatherUiState.Error("Could not get location.")
                 fetchWeatherByCityName(_currentCity.value)
             }
-
-            _isLoading.value = false
         }
     }
 
     private fun fetchWeatherByCityName(cityName: String) {
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
+            _uiState.value = WeatherUiState.Loading
             try {
                 val weatherInfo = getWeatherUseCase(cityName)
                 _rawWeatherInfo.value = weatherInfo
                 _currentCity.value = cityName
+
                 saveRecentCityUseCase(
                     cityName = weatherInfo.cityName,
                     temperature = weatherInfo.temperatureCelsius,
@@ -135,10 +155,8 @@ class WeatherViewModel @Inject constructor(
                 )
             } catch (e: Exception) {
                 val msg = e.message ?: "Unknown error"
-                _errorMessage.value = if (msg.contains("not found", true)) null else "Failed to fetch: $msg"
+                _uiState.value = WeatherUiState.Error("Failed to fetch weather for $cityName: $msg")
                 _rawWeatherInfo.value = null
-            } finally {
-                _isLoading.value = false
             }
         }
     }
