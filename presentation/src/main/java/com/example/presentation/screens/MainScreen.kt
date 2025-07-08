@@ -15,6 +15,8 @@ import androidx.navigation.NavController
 import com.example.presentation.screens.components.CitySearchBar
 import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.navigation.AppScreen
+import com.example.presentation.screens.components.DailyForecastColumn
+import com.example.presentation.screens.components.HourlyForecastRow
 import com.example.presentation.screens.components.WeatherContentStateView
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.utils.WeatherDisplayData
@@ -35,6 +37,9 @@ fun MainScreen(
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         viewModel.onLocationPermissionResult(granted)
     }
+
+    val forecast by viewModel.forecastState.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(requestLocationPermission) {
         if (requestLocationPermission) {
@@ -75,6 +80,14 @@ fun MainScreen(
                 ) {
                     Text("More Details")
                 }
+            }
+            forecast?.let {
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("Hourly Forecast", style = MaterialTheme.typography.titleLarge)
+                HourlyForecastRow(it.hourly)
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("7-Day Forecast", style = MaterialTheme.typography.titleLarge)
+                DailyForecastColumn(it.daily)
             }
         }
     }

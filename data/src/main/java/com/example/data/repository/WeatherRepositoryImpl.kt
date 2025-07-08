@@ -2,6 +2,7 @@ package com.example.data.repository
 
 import com.example.data.mapper.toDomain
 import com.example.data.remote.WeatherApiService
+import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
 import com.example.domain.repository.WeatherRepository
 import javax.inject.Inject
@@ -15,4 +16,14 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun getCurrentWeather(city: String): WeatherInfo {
         return api.getCurrentWeather(city = city, apiKey = apiKey).toDomain()
     }
+
+    override suspend fun getForecast(lat: Double, lon: Double): WeatherForecast {
+        val dto = api.getForecast(
+            lat = lat,
+            lon = lon,
+            apiKey = apiKey
+        )
+        return dto.toDomain()
+    }
+
 }

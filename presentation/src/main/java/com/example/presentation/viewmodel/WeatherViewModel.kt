@@ -4,26 +4,22 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherInfo
+import com.example.domain.model.WeatherForecast
 import com.example.domain.usecase.GetAppSettingsUseCase
-import com.example.presentation.viewmodel.utils.WeatherDisplayData
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
-import jakarta.inject.Inject
-import com.example.domain.usecase.SaveRecentCityUseCase
+import com.example.domain.usecase.GetForecastUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
+import com.example.domain.usecase.SaveRecentCityUseCase
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.utils.CityNameResolver
 import com.example.presentation.viewmodel.utils.LocationProvider
 import com.example.presentation.viewmodel.utils.RecentCityUiMapper
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 import com.example.presentation.viewmodel.utils.WeatherUiMapper
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
@@ -31,6 +27,7 @@ class WeatherViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getRecentCitiesUseCase: GetRecentCitiesUseCase,
+    private val getForecastUseCase: GetForecastUseCase,
     private val weatherUiMapper: WeatherUiMapper,
     private val recentCityUiMapper: RecentCityUiMapper,
     private val locationProvider: LocationProvider,
@@ -38,15 +35,16 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _rawWeatherInfo = MutableStateFlow<WeatherInfo?>(null)
-    private val _currentCity = MutableStateFlow("Belgrade") // Default city
+    private val _currentCity = MutableStateFlow("Belgrade")
 
     private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
     val uiState = _uiState.asStateFlow()
 
+    private val _forecastState = MutableStateFlow<WeatherForecast?>(null)
+    val forecastState = _forecastState.asStateFlow()
 
     private val _recentCitiesUiState = MutableStateFlow<WeatherUiState<List<WeatherDisplayData>>>(WeatherUiState.Empty)
     val recentCitiesUiState = _recentCitiesUiState.asStateFlow()
-
 
     private val _requestLocationPermission = MutableStateFlow(false)
     val requestLocationPermission = _requestLocationPermission.asStateFlow()
@@ -92,7 +90,6 @@ class WeatherViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun handleLocationEnabledChange(locationEnabled: Boolean) {
         if (locationEnabled) {
@@ -147,6 +144,9 @@ class WeatherViewModel @Inject constructor(
                 _rawWeatherInfo.value = weatherInfo
                 _currentCity.value = cityName
 
+                val forecast = getForecastUseCase(weatherInfo.latitude, weatherInfo.longitude)
+                _forecastState.value = forecast
+
                 saveRecentCityUseCase(
                     cityName = weatherInfo.cityName,
                     temperature = weatherInfo.temperatureCelsius,
@@ -157,6 +157,7 @@ class WeatherViewModel @Inject constructor(
                 val msg = e.message ?: "Unknown error"
                 _uiState.value = WeatherUiState.Error("Failed to fetch weather for $cityName: $msg")
                 _rawWeatherInfo.value = null
+                _forecastState.value = null
             }
         }
     }
