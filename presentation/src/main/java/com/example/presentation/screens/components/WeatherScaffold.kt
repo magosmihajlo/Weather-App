@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.example.presentation.navigation.AppScreen
+import com.example.presentation.navigation.navigateWithState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,12 +34,12 @@ fun WeatherScaffold(
                 actions = {
                     if (showActions) {
                         IconButton(onClick = {
-                            navController.navigate(AppScreen.CitiesScreen.route)
+                            navController.navigateWithState(AppScreen.CitiesScreen.route)
                         }) {
                             Icon(Icons.Filled.Search, contentDescription = "Recent Cities")
                         }
                         IconButton(onClick = {
-                            navController.navigate(AppScreen.SettingsScreen.route)
+                            navController.navigateWithState(AppScreen.SettingsScreen.route)
                         }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Settings")
                         }

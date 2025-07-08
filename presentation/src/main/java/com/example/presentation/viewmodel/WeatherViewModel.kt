@@ -3,8 +3,8 @@ package com.example.presentation.viewmodel
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.WeatherInfo
 import com.example.domain.model.WeatherForecast
+import com.example.domain.model.WeatherInfo
 import com.example.domain.usecase.GetAppSettingsUseCase
 import com.example.domain.usecase.GetForecastUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase

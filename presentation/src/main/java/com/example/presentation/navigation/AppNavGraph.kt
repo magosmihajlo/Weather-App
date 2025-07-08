@@ -100,3 +100,13 @@ sealed class NavigationItem(var route: String, var icon: ImageVector, var title:
     object Cities : NavigationItem(AppScreen.CitiesScreen.route, Icons.Filled.LocationOn, "Cities")
     object Settings : NavigationItem(AppScreen.SettingsScreen.route, Icons.Filled.Settings, "Settings")
 }
+
+fun NavController.navigateWithState(route: String) {
+    this.navigate(route) {
+        popUpTo(this@navigateWithState.graph.startDestinationRoute!!) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
