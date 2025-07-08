@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherInfo
 import com.example.domain.usecase.GetAppSettingsUseCase
-import com.example.presentation.uimodel.WeatherDisplayData
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,10 +17,10 @@ import com.example.domain.usecase.SaveRecentCityUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.utils.CityNameResolver
-import com.example.presentation.utils.LocationProvider
-import com.example.presentation.utils.RecentCityUiMapper
-import com.example.presentation.utils.WeatherUiMapper
+import com.example.presentation.viewmodel.utils.CityNameResolver
+import com.example.presentation.viewmodel.utils.LocationProvider
+import com.example.presentation.viewmodel.utils.RecentCityUiMapper
+import com.example.presentation.viewmodel.utils.WeatherUiMapper
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

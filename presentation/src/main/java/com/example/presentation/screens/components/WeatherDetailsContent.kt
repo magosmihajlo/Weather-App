@@ -1,4 +1,4 @@
-package com.example.presentation.screens
+package com.example.presentation.screens.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -8,10 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.presentation.uimodel.WeatherDisplayData
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 
 @Composable
-fun WeatherContent(
+fun WeatherDetailsContent(
     weatherData: WeatherDisplayData,
     showMainInfo: Boolean = true,
     showCurrentDetails: Boolean = true,

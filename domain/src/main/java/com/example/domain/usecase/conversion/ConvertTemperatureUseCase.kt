@@ -1,4 +1,4 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.conversion
 
 import com.example.domain.model.TemperatureUnit
 import com.example.domain.repository.UnitConversionRepository

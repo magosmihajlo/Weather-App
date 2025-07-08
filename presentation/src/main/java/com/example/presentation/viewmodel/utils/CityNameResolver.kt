@@ -1,4 +1,4 @@
-package com.example.presentation.utils
+package com.example.presentation.viewmodel.utils
 
 import android.location.Geocoder
 import jakarta.inject.Inject

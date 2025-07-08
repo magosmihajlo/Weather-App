@@ -13,11 +13,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.presentation.screens.components.CitySearchBar
-import com.example.presentation.screens.components.WeatherContentSection
 import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.navigation.AppScreen
+import com.example.presentation.screens.components.WeatherContentStateView
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.uimodel.WeatherDisplayData
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 import com.example.presentation.viewmodel.WeatherViewModel
 
 @Composable
@@ -61,7 +61,7 @@ fun MainScreen(
             CitySearchBar(onSearch = viewModel::searchWeather)
             Spacer(modifier = Modifier.height(16.dp))
 
-            WeatherContentSection(
+            WeatherContentStateView(
                 uiState = uiState,
                 modifier = Modifier.weight(1f),
                 showMainInfo = true

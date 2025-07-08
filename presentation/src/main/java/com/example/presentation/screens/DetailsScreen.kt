@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.presentation.screens.components.StatefulScreenContent
+import com.example.presentation.screens.components.WeatherContentStateView
 import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.viewmodel.WeatherViewModel
 
@@ -26,16 +26,12 @@ fun DetailsScreen(
         onBack = { navController.popBackStack() },
         showActions = false
     ) { padding ->
-        StatefulScreenContent(
+        WeatherContentStateView(
             uiState = uiState,
-            modifier = Modifier.padding(padding)
-        ) { weatherData ->
-            WeatherContent(
-                weatherData = weatherData,
-                showMainInfo = true,
-                showCurrentDetails = true,
-                showFullDetails = true
-            )
-        }
+            modifier = Modifier.padding(padding),
+            showMainInfo = true,
+            showCurrentDetails = true,
+            showFullDetails = true
+        )
     }
 }

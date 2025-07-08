@@ -4,9 +4,9 @@ import com.example.domain.repository.AppSettingsRepository
 import com.example.domain.repository.RecentCityRepository
 import com.example.domain.repository.UnitConversionRepository
 import com.example.domain.repository.WeatherRepository
-import com.example.domain.usecase.ConvertPressureUseCase
-import com.example.domain.usecase.ConvertTemperatureUseCase
-import com.example.domain.usecase.ConvertWindSpeedUseCase
+import com.example.domain.usecase.conversion.ConvertPressureUseCase
+import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
+import com.example.domain.usecase.conversion.ConvertWindSpeedUseCase
 import com.example.domain.usecase.GetAppSettingsUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase

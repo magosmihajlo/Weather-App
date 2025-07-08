@@ -1,14 +1,11 @@
-package com.example.presentation.utils
+package com.example.presentation.viewmodel.utils
 
 import com.example.domain.model.AppSettings
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WeatherInfo
-import com.example.domain.usecase.ConvertPressureUseCase
-import com.example.domain.usecase.ConvertTemperatureUseCase
-import com.example.domain.usecase.ConvertWindSpeedUseCase
-import com.example.presentation.uimodel.WeatherDisplayData
-import com.example.presentation.uimodel.hourMinuteFormatter12
-import com.example.presentation.uimodel.hourMinuteFormatter24
+import com.example.domain.usecase.conversion.ConvertPressureUseCase
+import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
+import com.example.domain.usecase.conversion.ConvertWindSpeedUseCase
 import jakarta.inject.Inject
 import java.time.Instant
 import java.time.ZoneId

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.presentation.uimodel.WeatherDisplayData
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 
 @Composable
 fun CityWeatherCard(

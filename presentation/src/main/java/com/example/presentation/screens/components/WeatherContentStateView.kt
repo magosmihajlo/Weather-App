@@ -3,11 +3,10 @@ package com.example.presentation.screens.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.uimodel.WeatherDisplayData
-import com.example.presentation.screens.WeatherContent
+import com.example.presentation.viewmodel.utils.WeatherDisplayData
 
 @Composable
-fun WeatherContentSection(
+fun WeatherContentStateView(
     uiState: WeatherUiState<WeatherDisplayData>,
     modifier: Modifier = Modifier,
     showMainInfo: Boolean = true,
@@ -18,7 +17,7 @@ fun WeatherContentSection(
         uiState = uiState,
         modifier = modifier
     ) { weatherData ->
-        WeatherContent(
+        WeatherDetailsContent(
             weatherData = weatherData,
             showMainInfo = showMainInfo,
             showCurrentDetails = showCurrentDetails,

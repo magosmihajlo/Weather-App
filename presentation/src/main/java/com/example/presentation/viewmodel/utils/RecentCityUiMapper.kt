@@ -1,9 +1,8 @@
-package com.example.presentation.utils
+package com.example.presentation.viewmodel.utils
 
 import com.example.domain.model.AppSettings
 import com.example.domain.model.RecentCity
-import com.example.domain.usecase.ConvertTemperatureUseCase
-import com.example.presentation.uimodel.WeatherDisplayData
+import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
 import jakarta.inject.Inject
 
 class RecentCityUiMapper @Inject constructor(

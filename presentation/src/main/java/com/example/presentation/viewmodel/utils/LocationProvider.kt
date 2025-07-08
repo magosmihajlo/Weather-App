@@ -1,4 +1,4 @@
-package com.example.presentation.utils
+package com.example.presentation.viewmodel.utils
 
 import android.Manifest
 import android.app.Application
