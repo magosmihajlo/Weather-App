@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +17,7 @@ import androidx.navigation.NavController
 import com.example.domain.model.PressureUnit
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
+import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,72 +28,65 @@ fun SettingsScreen(
 ) {
     val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+    WeatherScaffold(
+        navController = navController,
+        title = "Settings",
+        onBack = { navController.popBackStack() },
+        showActions = false
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SettingsSection(title = "MEASUREMENTS") {
+                UnitSelectionRow(
+                    label = "WIND SPEED",
+                    options = WindSpeedUnit.entries.toTypedArray(),
+                    selectedOption = appSettings.windSpeedUnit,
+                    onOptionSelected = { viewModel.updateWindSpeedUnit(it) }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                UnitSelectionRow(
+                    label = "PRESSURE",
+                    options = PressureUnit.entries.toTypedArray(),
+                    selectedOption = appSettings.pressureUnit,
+                    onOptionSelected = { viewModel.updatePressureUnit(it) }
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SettingsSection(title = "Notifications") {
+                SettingsToggleItem(
+                    label = "Notifications",
+                    description = "Be aware of the weather",
+                    checked = appSettings.notificationsEnabled,
+                    onCheckedChange = { viewModel.updateNotificationsEnabled(it) }
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SettingsSection(title = "General") {
+                SettingsToggleItem(
+                    label = "12-Hour Time",
+                    checked = appSettings.timeFormat == TimeFormat.TWELVE_HOUR,
+                    onCheckedChange = {
+                        viewModel.updateTimeFormat(if (it) TimeFormat.TWELVE_HOUR else TimeFormat.TWENTY_FOUR_HOUR)
                     }
-                }
-            )
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SettingsSection(title = "MEASUREMENTS") {
-                    UnitSelectionRow(
-                        label = "WIND SPEED",
-                        options = WindSpeedUnit.entries.toTypedArray(),
-                        selectedOption = appSettings.windSpeedUnit,
-                        onOptionSelected = { viewModel.updateWindSpeedUnit(it) }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    UnitSelectionRow(
-                        label = "PRESSURE",
-                        options = PressureUnit.entries.toTypedArray(),
-                        selectedOption = appSettings.pressureUnit,
-                        onOptionSelected = { viewModel.updatePressureUnit(it) }
-                    )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                SettingsSection(title = "Notifications") {
-                    SettingsToggleItem(
-                        label = "Notifications",
-                        description = "Be aware of the weather",
-                        checked = appSettings.notificationsEnabled,
-                        onCheckedChange = { viewModel.updateNotificationsEnabled(it) }
-                    )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                SettingsSection(title = "General") {
-                    SettingsToggleItem(
-                        label = "12-Hour Time",
-                        checked = appSettings.timeFormat == TimeFormat.TWELVE_HOUR,
-                        onCheckedChange = {
-                            viewModel.updateTimeFormat(if (it) TimeFormat.TWELVE_HOUR else TimeFormat.TWENTY_FOUR_HOUR)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SettingsToggleItem(
-                        label = "Location",
-                        description = "Get weather of your location",
-                        checked = appSettings.locationEnabled,
-                        onCheckedChange = { viewModel.updateLocationEnabled(it) }
-                    )
-                }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                SettingsToggleItem(
+                    label = "Location",
+                    description = "Get weather of your location",
+                    checked = appSettings.locationEnabled,
+                    onCheckedChange = { viewModel.updateLocationEnabled(it) }
+                )
             }
         }
-    )
+    }
 }
 
 @Composable

@@ -160,4 +160,12 @@ class WeatherViewModel @Inject constructor(
             }
         }
     }
+
+    fun onLocationPermissionResult(granted: Boolean) {
+        if (granted) {
+            fetchCurrentLocationWeather()
+        } else {
+            searchWeather("Belgrade")
+        }
+    }
 }
