@@ -1,5 +1,6 @@
 package com.example.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.presentation.navigation.AppScreen
+import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.CityWeatherCard
 import com.example.presentation.screens.components.StatefulScreenContent
 import com.example.presentation.screens.components.WeatherScaffold
@@ -27,7 +30,6 @@ fun CitiesScreen(
     WeatherScaffold(
         navController = navController,
         title = "Recent Cities",
-        onBack = { navController.popBackStack() },
         showActions = false
     ) { padding ->
         StatefulScreenContent(
@@ -43,8 +45,9 @@ fun CitiesScreen(
             ) {
                 items(cities) { city ->
                     CityWeatherCard(weatherData = city) {
+                        Log.d("ERROR CHECK", "Clicked on city: ${city.locationName}")
                         viewModel.searchWeather(city.locationName)
-                        navController.popBackStack()
+                        navController.navigateWithState(AppScreen.MainScreen.route)
                     }
                 }
             }

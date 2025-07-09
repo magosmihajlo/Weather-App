@@ -23,7 +23,6 @@ fun DetailsScreen(
     WeatherScaffold(
         navController = navController,
         title = "Detailed Weather",
-        onBack = { navController.popBackStack() },
         showActions = false
     ) { padding ->
         WeatherContentStateView(

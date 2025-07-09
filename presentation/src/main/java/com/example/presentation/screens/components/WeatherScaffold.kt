@@ -3,7 +3,7 @@ package com.example.presentation.screens.components
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -36,7 +36,7 @@ fun WeatherScaffold(
                         IconButton(onClick = {
                             navController.navigateWithState(AppScreen.CitiesScreen.route)
                         }) {
-                            Icon(Icons.Filled.Search, contentDescription = "Recent Cities")
+                            Icon(Icons.Filled.LocationOn, contentDescription = "Recent Cities")
                         }
                         IconButton(onClick = {
                             navController.navigateWithState(AppScreen.SettingsScreen.route)

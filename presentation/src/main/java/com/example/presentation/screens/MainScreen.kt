@@ -1,6 +1,7 @@
 package com.example.presentation.screens
 
 import android.Manifest
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -66,6 +67,9 @@ fun MainScreen(
             }
 
             item {
+                if (uiState is WeatherUiState.Success) {
+                    Log.d("ERROR CHECK", "Showing weather for: ${(uiState as WeatherUiState.Success).data.locationName}")
+                }
                 WeatherContentStateView(
                     uiState = uiState,
                     modifier = Modifier.fillMaxWidth(),

@@ -31,7 +31,6 @@ fun SettingsScreen(
     WeatherScaffold(
         navController = navController,
         title = "Settings",
-        onBack = { navController.popBackStack() },
         showActions = false
     ) { paddingValues ->
         Column(
