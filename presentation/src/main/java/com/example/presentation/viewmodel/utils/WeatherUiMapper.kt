@@ -19,7 +19,6 @@ class WeatherUiMapper @Inject constructor(
         val temp = convertTemperature(info.temperatureCelsius, settings.temperatureUnit)
         val minTemp = convertTemperature(info.minTemperatureCelsius, settings.temperatureUnit)
         val maxTemp = convertTemperature(info.maxTemperatureCelsius, settings.temperatureUnit)
-        val feels = convertTemperature(info.feelsLikeCelsius, settings.temperatureUnit)
         val wind = convertWindSpeed(info.windSpeedKmh, settings.windSpeedUnit)
         val pressure = convertPressure(info.pressureHPa.toDouble(), settings.pressureUnit)
 
@@ -32,7 +31,6 @@ class WeatherUiMapper @Inject constructor(
             temperature = "%.1f%s".format(temp, settings.temperatureUnit.label),
             minTemperature = "Min: %.1f%s".format(minTemp, settings.temperatureUnit.label),
             maxTemperature = "Max: %.1f%s".format(maxTemp, settings.temperatureUnit.label),
-            feelsLikeTemperature = "Feels Like: %.1f%s".format(feels, settings.temperatureUnit.label),
             humidity = "${info.humidityPercent}%",
             windSpeed = "%.1f %s".format(wind, settings.windSpeedUnit.label),
             pressure = "%.0f %s".format(pressure, settings.pressureUnit.label),

@@ -13,6 +13,7 @@ import com.example.domain.usecase.GetForecastUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
 import com.example.domain.usecase.SaveRecentCityUseCase
+import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.utils.CityNameResolver
 import com.example.presentation.viewmodel.utils.LocationProvider
@@ -36,7 +37,8 @@ class WeatherViewModel @Inject constructor(
     private val weatherUiMapper: WeatherUiMapper,
     private val recentCityUiMapper: RecentCityUiMapper,
     private val locationProvider: LocationProvider,
-    private val cityNameResolver: CityNameResolver
+    private val cityNameResolver: CityNameResolver,
+    private val convertTemperature: ConvertTemperatureUseCase
 ) : ViewModel() {
 
     private val _currentCity = MutableStateFlow("Belgrade")
@@ -67,6 +69,20 @@ class WeatherViewModel @Inject constructor(
                             val settings = getAppSettingsUseCase().first()
                             val displayData = weatherUiMapper.map(weatherInfo, settings)
 
+                            val patchedDisplayData = forecast.daily.firstOrNull()?.let { day ->
+                                displayData.copy(
+                                    minTemperature = "Min: %.1f%s".format(
+                                        convertTemperature(day.minTemp, settings.temperatureUnit),
+                                        settings.temperatureUnit.label
+                                    ),
+                                    maxTemperature = "Max: %.1f%s".format(
+                                        convertTemperature(day.maxTemp, settings.temperatureUnit),
+                                        settings.temperatureUnit.label
+                                    )
+                                )
+                            } ?: displayData
+
+
                             latestWeatherInfo = weatherInfo
 
                             _currentCity.value = weatherInfo.cityName
@@ -78,7 +94,7 @@ class WeatherViewModel @Inject constructor(
                                 description = weatherInfo.description
                             )
 
-                            emit(WeatherUiState.Success(displayData))
+                            emit(WeatherUiState.Success(patchedDisplayData))
                             Log.d("WeatherViewModel", "Updated UI with ${displayData.locationName}")
 
                         } catch (e: Exception) {

@@ -17,7 +17,6 @@ class RecentCityUiMapper @Inject constructor(
                 temperature = "%.1f%s".format(convertTemperature(it.temperature, settings.temperatureUnit), settings.temperatureUnit.label),
                 minTemperature = "",
                 maxTemperature = "",
-                feelsLikeTemperature = "",
                 humidity = "",
                 windSpeed = "",
                 pressure = "",

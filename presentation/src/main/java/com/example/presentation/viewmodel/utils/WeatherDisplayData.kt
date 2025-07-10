@@ -12,7 +12,6 @@ data class WeatherDisplayData(
     val temperature: String,
     val minTemperature: String,
     val maxTemperature: String,
-    val feelsLikeTemperature: String,
     val humidity: String,
     val windSpeed: String,
     val pressure: String,

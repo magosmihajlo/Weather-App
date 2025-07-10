@@ -45,7 +45,6 @@ fun WeatherDetailsContent(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text(text = weatherData.minTemperature, style = MaterialTheme.typography.bodyLarge)
                 Text(text = weatherData.maxTemperature, style = MaterialTheme.typography.bodyLarge)
-                Text(text = weatherData.feelsLikeTemperature, style = MaterialTheme.typography.bodyLarge)
                 if (showFullDetails) {
                     Text(text = weatherData.humidity, style = MaterialTheme.typography.bodyLarge)
                     Text(text = weatherData.windSpeed, style = MaterialTheme.typography.bodyLarge)
