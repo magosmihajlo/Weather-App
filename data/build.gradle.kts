@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.hilt.android)
+    implementation(libs.play.services.location)
     kapt(libs.hilt.compiler)
 
     // Kotlin Coroutines
@@ -63,6 +64,9 @@ dependencies {
     // testImplementation(libs.junit)
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.kotlinx.coroutines.play.services)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

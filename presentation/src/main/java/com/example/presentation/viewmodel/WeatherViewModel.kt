@@ -9,14 +9,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
 import com.example.domain.usecase.GetAppSettingsUseCase
+import com.example.domain.usecase.GetCityNameUseCase
+import com.example.domain.usecase.GetCurrentLocationUseCase
 import com.example.domain.usecase.GetForecastUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
+import com.example.domain.usecase.HasLocationPermissionUseCase
 import com.example.domain.usecase.SaveRecentCityUseCase
 import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.viewmodel.utils.CityNameResolver
-import com.example.presentation.viewmodel.utils.LocationProvider
 import com.example.presentation.viewmodel.utils.RecentCityUiMapper
 import com.example.presentation.viewmodel.utils.WeatherDisplayData
 import com.example.presentation.viewmodel.utils.WeatherUiMapper
@@ -36,9 +37,10 @@ class WeatherViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
     private val weatherUiMapper: WeatherUiMapper,
     private val recentCityUiMapper: RecentCityUiMapper,
-    private val locationProvider: LocationProvider,
-    private val cityNameResolver: CityNameResolver,
-    private val convertTemperature: ConvertTemperatureUseCase
+    private val convertTemperature: ConvertTemperatureUseCase,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val hasLocationPermissionUseCase: HasLocationPermissionUseCase,
+    private val getCityNameUseCase: GetCityNameUseCase
 ) : ViewModel() {
 
     private val _currentCity = MutableStateFlow("Belgrade")
@@ -151,7 +153,7 @@ class WeatherViewModel @Inject constructor(
 
     private fun handleLocationEnabledChange(locationEnabled: Boolean) {
         if (locationEnabled) {
-            if (locationProvider.hasLocationPermission()) {
+            if (hasLocationPermissionUseCase()) {
                 fetchCurrentLocationWeather()
             } else {
                 _requestLocationPermission.value = true
@@ -178,9 +180,9 @@ class WeatherViewModel @Inject constructor(
             _uiState.value = WeatherUiState.Loading
             _requestLocationPermission.value = false
 
-            val location = locationProvider.getCurrentLocation()
+            val location = getCurrentLocationUseCase()
             if (location != null) {
-                val city = cityNameResolver.getCityName(location.latitude, location.longitude)
+                val city = getCityNameUseCase(location.latitude, location.longitude)
                 if (city != null) {
                     searchTrigger.emit(city)
                 } else {
@@ -193,6 +195,7 @@ class WeatherViewModel @Inject constructor(
             }
         }
     }
+
 
     fun onLocationPermissionResult(granted: Boolean) {
         if (granted) {

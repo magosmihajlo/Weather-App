@@ -1,6 +1,8 @@
 package com.example.di.module
 
 import com.example.domain.repository.AppSettingsRepository
+import com.example.domain.repository.CityNameResolver
+import com.example.domain.repository.LocationProvider
 import com.example.domain.repository.RecentCityRepository
 import com.example.domain.repository.UnitConversionRepository
 import com.example.domain.repository.WeatherRepository
@@ -8,6 +10,8 @@ import com.example.domain.usecase.conversion.ConvertPressureUseCase
 import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
 import com.example.domain.usecase.conversion.ConvertWindSpeedUseCase
 import com.example.domain.usecase.GetAppSettingsUseCase
+import com.example.domain.usecase.GetCityNameUseCase
+import com.example.domain.usecase.GetCurrentLocationUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
 import com.example.domain.usecase.GetWeatherUseCase
 import com.example.domain.usecase.SaveRecentCityUseCase
@@ -68,6 +72,19 @@ object UseCaseModule {
     fun provideGetAppSettingsUseCase(
         appSettingsRepository: AppSettingsRepository
     ): GetAppSettingsUseCase = GetAppSettingsUseCase(appSettingsRepository)
+
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentLocationUseCase(
+        locationProvider: LocationProvider
+    ): GetCurrentLocationUseCase = GetCurrentLocationUseCase(locationProvider)
+
+    @Provides
+    @Singleton
+    fun provideGetCityNameUseCase(
+        cityNameResolver: CityNameResolver
+    ): GetCityNameUseCase = GetCityNameUseCase(cityNameResolver)
 
 }
 

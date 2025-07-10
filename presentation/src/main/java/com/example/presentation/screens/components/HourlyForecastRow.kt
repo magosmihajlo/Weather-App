@@ -17,6 +17,7 @@ import com.example.domain.model.HourlyWeather
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun HourlyForecastRow(hourly: List<HourlyWeather>) {
@@ -38,7 +39,7 @@ fun HourlyForecastRow(hourly: List<HourlyWeather>) {
                     contentDescription = hour.description,
                     modifier = Modifier.size(48.dp)
                 )
-                Text(text = "${hour.temperature}°C")
+                Text(text = String.format(Locale.getDefault(), "%.1f°C", hour.temperature))
             }
         }
     }
