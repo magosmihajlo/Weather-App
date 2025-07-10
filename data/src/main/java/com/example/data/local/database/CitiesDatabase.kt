@@ -6,6 +6,6 @@ import com.example.data.local.dao.RecentCityDao
 import com.example.data.local.entity.RecentCityEntity
 
 @Database(entities = [RecentCityEntity::class], version = 1, exportSchema = false)
-abstract class AppDatabase : RoomDatabase() {
+abstract class CitiesDatabase : RoomDatabase() {
     abstract fun recentCityDao(): RecentCityDao
 }

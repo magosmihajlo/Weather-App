@@ -3,7 +3,7 @@ package com.example.presentation.screens.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.viewmodel.utils.WeatherDisplayData
+import com.example.domain.model.WeatherDisplayData
 
 @Composable
 fun WeatherContentStateView(

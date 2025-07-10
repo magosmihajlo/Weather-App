@@ -1,4 +1,4 @@
-package com.example.data.repository
+package com.example.data.repository.location
 
 import android.Manifest
 import android.app.Application

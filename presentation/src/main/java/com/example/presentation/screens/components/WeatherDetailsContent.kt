@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.presentation.viewmodel.utils.WeatherDisplayData
+import com.example.domain.model.WeatherDisplayData
 
 @Composable
 fun WeatherDetailsContent(

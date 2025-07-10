@@ -70,10 +70,12 @@ Each layer communicates **only with the one directly below or above** it, ensuri
 
 ## 🛠️ Planned Improvements
   
+- Improve Presentation module, ViewModels are too heavy
 - 🔔 Notification support for severe weather alerts  
 - 🔍 Advanced search with autocomplete  
 - 📤 Shareable forecasts via text/social  
 - 🌙 Dark/light mode support  
 - 🧪 Full unit and UI test coverage  
+
 
 ---

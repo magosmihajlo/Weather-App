@@ -1,4 +1,4 @@
-package com.example.data.repository
+package com.example.data.repository.general
 
 import com.example.data.local.dao.RecentCityDao
 import com.example.data.local.entity.RecentCityEntity

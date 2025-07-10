@@ -14,7 +14,6 @@ import com.example.presentation.viewmodel.SettingsViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()

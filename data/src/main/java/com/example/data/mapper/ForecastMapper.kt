@@ -1,6 +1,6 @@
 package com.example.data.mapper
 
-import com.example.data.remote.ForecastDto
+import com.example.data.remote.dto.ForecastDto
 import com.example.domain.model.DailyWeather
 import com.example.domain.model.HourlyWeather
 import com.example.domain.model.WeatherForecast

@@ -1,9 +1,9 @@
 package com.example.presentation.viewmodel
 
-// TODO: Main thing for now. ViewModel is too packed
+// TODO: Main thing for now. ViewModel is too packed, I need to remove a lot of the code
+// 90% of job is in here
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherForecast
@@ -18,16 +18,15 @@ import com.example.domain.usecase.HasLocationPermissionUseCase
 import com.example.domain.usecase.SaveRecentCityUseCase
 import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
 import com.example.presentation.state.WeatherUiState
-import com.example.presentation.viewmodel.utils.RecentCityUiMapper
-import com.example.presentation.viewmodel.utils.WeatherDisplayData
-import com.example.presentation.viewmodel.utils.WeatherUiMapper
+import com.example.domain.model.WeatherDisplayData
+import com.example.domain.usecase.MapRecentCitiesToDisplayUseCase
+import com.example.domain.usecase.MapWeatherToDisplayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
@@ -35,124 +34,124 @@ class WeatherViewModel @Inject constructor(
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getRecentCitiesUseCase: GetRecentCitiesUseCase,
     private val getForecastUseCase: GetForecastUseCase,
-    private val weatherUiMapper: WeatherUiMapper,
-    private val recentCityUiMapper: RecentCityUiMapper,
+    private val mapRecentCitiesToDisplayUseCase: MapRecentCitiesToDisplayUseCase,
     private val convertTemperature: ConvertTemperatureUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val hasLocationPermissionUseCase: HasLocationPermissionUseCase,
-    private val getCityNameUseCase: GetCityNameUseCase
+    private val getCityNameUseCase: GetCityNameUseCase,
+    private val mapper: MapWeatherToDisplayUseCase
 ) : ViewModel() {
 
-    private val _currentCity = MutableStateFlow("Belgrade")
     private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
     val uiState = _uiState.asStateFlow()
+
     private val _forecastState = MutableStateFlow<WeatherForecast?>(null)
     val forecastState = _forecastState.asStateFlow()
+
     private val _recentCitiesUiState = MutableStateFlow<WeatherUiState<List<WeatherDisplayData>>>(WeatherUiState.Empty)
     val recentCitiesUiState = _recentCitiesUiState.asStateFlow()
-    private val searchTrigger = MutableSharedFlow<String>(replay = 1)
+
     private val _requestLocationPermission = MutableStateFlow(false)
     val requestLocationPermission = _requestLocationPermission.asStateFlow()
 
+    private val _currentCity = MutableStateFlow("Belgrade")
+    private val searchTrigger = MutableSharedFlow<String>(replay = 1)
+
     private var latestWeatherInfo: WeatherInfo? = null
 
-    init {
-        observeAppSettings()
-        observeRecentCities()
+    private val settingsFlow = getAppSettingsUseCase().distinctUntilChanged().shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
+    init {
+        observeSearchTrigger()
+        observeRecentCities()
+        observeAppSettings()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeSearchTrigger() {
         viewModelScope.launch {
             searchTrigger
-                .flatMapLatest { cityName ->
-                    flow {
-                        emit(WeatherUiState.Loading)
-                        try {
-                            val weatherInfo = getWeatherUseCase(cityName)
-                            val forecast = getForecastUseCase(weatherInfo.latitude, weatherInfo.longitude)
-                            val settings = getAppSettingsUseCase().first()
-                            val displayData = weatherUiMapper.map(weatherInfo, settings)
-
-                            val patchedDisplayData = forecast.daily.firstOrNull()?.let { day ->
-                                displayData.copy(
-                                    minTemperature = "Min: %.1f%s".format(
-                                        convertTemperature(day.minTemp, settings.temperatureUnit),
-                                        settings.temperatureUnit.label
-                                    ),
-                                    maxTemperature = "Max: %.1f%s".format(
-                                        convertTemperature(day.maxTemp, settings.temperatureUnit),
-                                        settings.temperatureUnit.label
-                                    )
-                                )
-                            } ?: displayData
-
-
-                            latestWeatherInfo = weatherInfo
-
-                            _currentCity.value = weatherInfo.cityName
-                            _forecastState.value = forecast
-                            saveRecentCityUseCase(
-                                cityName = weatherInfo.cityName,
-                                temperature = weatherInfo.temperatureCelsius,
-                                iconCode = weatherInfo.iconCode,
-                                description = weatherInfo.description
-                            )
-
-                            emit(WeatherUiState.Success(patchedDisplayData))
-                            Log.d("WeatherViewModel", "Updated UI with ${displayData.locationName}")
-
-                        } catch (e: Exception) {
-                            val msg = e.message ?: "Unknown error"
-                            _forecastState.value = null
-                            emit(WeatherUiState.Error("Failed to fetch weather for $cityName: $msg"))
-                            Log.e("WeatherViewModel", "Error fetching weather", e)
-                        }
-                    }
-                }
-                .collect { state ->
-                    _uiState.value = state
-                }
+                .flatMapLatest { city -> loadWeather(city) }
+                .collect { _uiState.value = it }
         }
+    }
 
-        viewModelScope.launch {
-            getAppSettingsUseCase()
-                .distinctUntilChanged()
-                .collect { settings ->
-                    latestWeatherInfo?.let { info ->
-                        val displayData = weatherUiMapper.map(info, settings)
-                        _uiState.value = WeatherUiState.Success(displayData)
-                        Log.d("WeatherViewModel", "Re-mapped UI with new settings: ${settings.temperatureUnit}")
-                    }
-                }
+    private suspend fun loadWeather(city: String): Flow<WeatherUiState<WeatherDisplayData>> = flow {
+        emit(WeatherUiState.Loading)
+        try {
+            val weatherInfo = getWeatherUseCase(city)
+            val forecast = getForecastUseCase(weatherInfo.latitude, weatherInfo.longitude)
+            val settings = settingsFlow.first()
+            val displayData = mapper(weatherInfo, settings)
+
+            val patchedData = forecast.daily.firstOrNull()?.let { day ->
+                displayData.copy(
+                    minTemperature = "Min: %.1f%s".format(
+                        convertTemperature(day.minTemp, settings.temperatureUnit),
+                        settings.temperatureUnit.label
+                    ),
+                    maxTemperature = "Max: %.1f%s".format(
+                        convertTemperature(day.maxTemp, settings.temperatureUnit),
+                        settings.temperatureUnit.label
+                    )
+                )
+            } ?: displayData
+
+            latestWeatherInfo = weatherInfo
+            _currentCity.value = weatherInfo.cityName
+            _forecastState.value = forecast
+
+            saveRecentCityUseCase(
+                weatherInfo.cityName,
+                weatherInfo.temperatureCelsius,
+                weatherInfo.iconCode,
+                weatherInfo.description
+            )
+
+            emit(WeatherUiState.Success(patchedData))
+        } catch (e: Exception) {
+            _forecastState.value = null
+            emit(WeatherUiState.Error("Failed to fetch weather for $city: ${e.message ?: "Unknown error"}"))
         }
     }
 
     private fun observeAppSettings() {
         viewModelScope.launch {
-            getAppSettingsUseCase()
+            settingsFlow
                 .map { it.locationEnabled }
                 .distinctUntilChanged()
-                .collect { locationEnabled ->
-                    handleLocationEnabledChange(locationEnabled)
-                }
+                .collect(::handleLocationEnabledChange)
         }
-    }
 
-    private fun observeRecentCities() {
         viewModelScope.launch {
-            _recentCitiesUiState.value = WeatherUiState.Loading
-            getRecentCitiesUseCase().collect { recentCities ->
-                if (recentCities.isEmpty()) {
-                    _recentCitiesUiState.value = WeatherUiState.Empty
-                } else {
-                    val settings = getAppSettingsUseCase().first()
-                    val displayData = recentCityUiMapper.map(recentCities, settings)
-                    _recentCitiesUiState.value = WeatherUiState.Success(displayData)
+            settingsFlow.collect { settings ->
+                latestWeatherInfo?.let {
+                    _uiState.value = WeatherUiState.Success(mapper(it, settings))
                 }
             }
         }
     }
 
-    private fun handleLocationEnabledChange(locationEnabled: Boolean) {
-        if (locationEnabled) {
+    private fun observeRecentCities() {
+        viewModelScope.launch {
+            combine(
+                getRecentCitiesUseCase(),
+                getAppSettingsUseCase()
+            ) { recentCities, settings -> recentCities to settings }
+                .collect { (recentCities, settings) ->
+                    _recentCitiesUiState.value = if (recentCities.isEmpty()) {
+                        WeatherUiState.Empty
+                    } else {
+                        val displayData = mapRecentCitiesToDisplayUseCase(recentCities, settings)
+                        WeatherUiState.Success(displayData)
+                    }
+                }
+        }
+    }
+
+
+    private fun handleLocationEnabledChange(enabled: Boolean) {
+        if (enabled) {
             if (hasLocationPermissionUseCase()) {
                 fetchCurrentLocationWeather()
             } else {
@@ -165,13 +164,12 @@ class WeatherViewModel @Inject constructor(
     }
 
     fun searchWeather(cityName: String) {
-        if (cityName.isNotBlank()) {
-            viewModelScope.launch {
-                searchTrigger.emit(cityName)
-            }
-        } else {
+        if (cityName.isBlank()) {
             _uiState.value = WeatherUiState.Error("City name cannot be empty.")
+            return
         }
+
+        viewModelScope.launch { searchTrigger.emit(cityName) }
     }
 
     @SuppressLint("MissingPermission")
@@ -181,27 +179,16 @@ class WeatherViewModel @Inject constructor(
             _requestLocationPermission.value = false
 
             val location = getCurrentLocationUseCase()
-            if (location != null) {
-                val city = getCityNameUseCase(location.latitude, location.longitude)
-                if (city != null) {
-                    searchTrigger.emit(city)
-                } else {
-                    _uiState.value = WeatherUiState.Error("Could not determine city from location.")
-                    searchTrigger.emit(_currentCity.value)
-                }
-            } else {
-                _uiState.value = WeatherUiState.Error("Could not get location.")
-                searchTrigger.emit(_currentCity.value)
+            val city = location?.let {
+                getCityNameUseCase(it.latitude, it.longitude)
             }
+
+            searchTrigger.emit(city ?: _currentCity.value)
         }
     }
 
-
     fun onLocationPermissionResult(granted: Boolean) {
-        if (granted) {
-            fetchCurrentLocationWeather()
-        } else {
-            searchWeather("Belgrade")
-        }
+        if (granted) fetchCurrentLocationWeather()
+        else searchWeather("Belgrade")
     }
 }

@@ -1,10 +1,8 @@
 package com.example.data.mapper
 
 
-import com.example.data.remote.WeatherResponseDto
+import com.example.data.remote.dto.WeatherResponseDto
 import com.example.domain.model.WeatherInfo
-
-
 import com.example.data.local.entity.RecentCityEntity
 import com.example.domain.model.RecentCity
 

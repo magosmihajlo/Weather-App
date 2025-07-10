@@ -1,4 +1,4 @@
-package com.example.data.manager
+package com.example.data.repository.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -23,7 +23,7 @@ import javax.inject.Singleton
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
 
 @Singleton
-class SettingsManager @Inject constructor(@ApplicationContext private val context: Context) : AppSettingsRepository {
+class AppSettingsRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) : AppSettingsRepository {
 
     private val dataStore = context.dataStore
 

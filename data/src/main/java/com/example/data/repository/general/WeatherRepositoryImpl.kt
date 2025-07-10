@@ -1,7 +1,7 @@
-package com.example.data.repository
+package com.example.data.repository.general
 
 import com.example.data.mapper.toDomain
-import com.example.data.remote.WeatherApiService
+import com.example.data.remote.api.WeatherApiService
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
 import com.example.domain.repository.WeatherRepository

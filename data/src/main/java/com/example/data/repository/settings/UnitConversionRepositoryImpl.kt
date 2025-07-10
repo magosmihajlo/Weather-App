@@ -1,4 +1,4 @@
-package com.example.data.repository
+package com.example.data.repository.settings
 
 import com.example.domain.model.PressureUnit
 import com.example.domain.model.TemperatureUnit

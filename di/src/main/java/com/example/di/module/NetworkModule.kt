@@ -1,6 +1,6 @@
 package com.example.di.module
 
-import com.example.data.remote.WeatherApiService
+import com.example.data.remote.api.WeatherApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module

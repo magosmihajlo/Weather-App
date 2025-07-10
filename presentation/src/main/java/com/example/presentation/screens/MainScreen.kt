@@ -19,7 +19,7 @@ import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.*
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.WeatherViewModel
-import com.example.presentation.viewmodel.utils.WeatherDisplayData
+import com.example.domain.model.WeatherDisplayData
 
 @Composable
 fun MainScreen(
