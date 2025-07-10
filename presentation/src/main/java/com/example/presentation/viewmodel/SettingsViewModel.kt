@@ -1,9 +1,12 @@
 package com.example.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.AppSettings
 import com.example.domain.model.PressureUnit
+import com.example.domain.model.TemperatureUnit
+import com.example.domain.model.ThemeMode
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
 import com.example.domain.repository.AppSettingsRepository
@@ -26,15 +29,28 @@ class SettingsViewModel @Inject constructor(
             initialValue = AppSettings()
         )
 
-    fun updatePressureUnit(unit: PressureUnit) {
+    fun updateTemperatureUnit(unit: TemperatureUnit) {
         viewModelScope.launch {
-            appSettingsRepository.updatePressureUnit(unit)
+            Log.d("SettingsViewModel", "Updating temperature unit to: $unit")
+            appSettingsRepository.updateTemperatureUnit(unit)
         }
     }
 
     fun updateWindSpeedUnit(unit: WindSpeedUnit) {
         viewModelScope.launch {
             appSettingsRepository.updateWindSpeedUnit(unit)
+        }
+    }
+
+    fun updatePressureUnit(unit: PressureUnit) {
+        viewModelScope.launch {
+            appSettingsRepository.updatePressureUnit(unit)
+        }
+    }
+
+    fun updateNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.updateNotificationsEnabled(enabled)
         }
     }
 
@@ -50,9 +66,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateNotificationsEnabled(enabled: Boolean) {
+    fun updateThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
-            appSettingsRepository.updateNotificationsEnabled(enabled)
+            appSettingsRepository.updateThemeMode(mode)
         }
     }
+
 }

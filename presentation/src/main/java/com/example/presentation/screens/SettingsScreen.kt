@@ -15,10 +15,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.domain.model.PressureUnit
+import com.example.domain.model.TemperatureUnit
+import com.example.domain.model.ThemeMode
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
 import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.viewmodel.SettingsViewModel
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,60 +38,89 @@ fun SettingsScreen(
         title = "Settings",
         showActions = false
     ) { paddingValues ->
-        Column(
+        val listState = rememberLazyListState()
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = listState,
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            SettingsSection(title = "MEASUREMENTS") {
-                UnitSelectionRow(
-                    label = "WIND SPEED",
-                    options = WindSpeedUnit.entries.toTypedArray(),
-                    selectedOption = appSettings.windSpeedUnit,
-                    onOptionSelected = { viewModel.updateWindSpeedUnit(it) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            item {
+                SettingsSection(title = "MEASUREMENTS") {
+                    UnitSelectionRow(
+                        label = "TEMPERATURE",
+                        options = TemperatureUnit.entries.toTypedArray(),
+                        selectedOption = appSettings.temperatureUnit,
+                        onOptionSelected = { viewModel.updateTemperatureUnit(it) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                UnitSelectionRow(
-                    label = "PRESSURE",
-                    options = PressureUnit.entries.toTypedArray(),
-                    selectedOption = appSettings.pressureUnit,
-                    onOptionSelected = { viewModel.updatePressureUnit(it) }
-                )
+                    UnitSelectionRow(
+                        label = "WIND SPEED",
+                        options = WindSpeedUnit.entries.toTypedArray(),
+                        selectedOption = appSettings.windSpeedUnit,
+                        onOptionSelected = { viewModel.updateWindSpeedUnit(it) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    UnitSelectionRow(
+                        label = "PRESSURE",
+                        options = PressureUnit.entries.toTypedArray(),
+                        selectedOption = appSettings.pressureUnit,
+                        onOptionSelected = { viewModel.updatePressureUnit(it) }
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(24.dp))
 
-            SettingsSection(title = "Notifications") {
-                SettingsToggleItem(
-                    label = "Notifications",
-                    description = "Be aware of the weather",
-                    checked = appSettings.notificationsEnabled,
-                    onCheckedChange = { viewModel.updateNotificationsEnabled(it) }
-                )
+            item {
+                SettingsSection(title = "Notifications") {
+                    SettingsToggleItem(
+                        label = "Notifications",
+                        description = "Be aware of the weather",
+                        checked = appSettings.notificationsEnabled,
+                        onCheckedChange = { viewModel.updateNotificationsEnabled(it) }
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(24.dp))
 
-            SettingsSection(title = "General") {
-                SettingsToggleItem(
-                    label = "12-Hour Time",
-                    checked = appSettings.timeFormat == TimeFormat.TWELVE_HOUR,
-                    onCheckedChange = {
-                        viewModel.updateTimeFormat(if (it) TimeFormat.TWELVE_HOUR else TimeFormat.TWENTY_FOUR_HOUR)
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                SettingsToggleItem(
-                    label = "Location",
-                    description = "Get weather of your location",
-                    checked = appSettings.locationEnabled,
-                    onCheckedChange = { viewModel.updateLocationEnabled(it) }
-                )
+            item {
+                SettingsSection(title = "General") {
+                    SettingsToggleItem(
+                        label = "12-Hour Time",
+                        checked = appSettings.timeFormat == TimeFormat.TWELVE_HOUR,
+                        onCheckedChange = {
+                            viewModel.updateTimeFormat(if (it) TimeFormat.TWELVE_HOUR else TimeFormat.TWENTY_FOUR_HOUR)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SettingsToggleItem(
+                        label = "Location",
+                        description = "Get weather of your location",
+                        checked = appSettings.locationEnabled,
+                        onCheckedChange = { viewModel.updateLocationEnabled(it) }
+                    )
+                }
+            }
+
+            item {
+                SettingsSection(title = "Theme") {
+                    UnitSelectionRow(
+                        label = "Theme Mode",
+                        options = ThemeMode.entries.toTypedArray(),
+                        selectedOption = appSettings.themeMode,
+                        onOptionSelected = { viewModel.updateThemeMode(it) }
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun SettingsSection(title: String, content: @Composable () -> Unit) {
@@ -142,7 +176,12 @@ fun <T : Enum<T>> UnitSelectionRow(
                     ),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = (option as? PressureUnit)?.label ?: (option as? WindSpeedUnit)?.label ?: option.name)
+                    Text(text = when (option) {
+                        is PressureUnit -> option.label
+                        is WindSpeedUnit -> option.label
+                        is TemperatureUnit -> option.label
+                        else -> option.name
+                    })
                 }
             }
         }

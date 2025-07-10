@@ -1,5 +1,9 @@
 package com.example.domain.model
 
+enum class ThemeMode {
+    LIGHT, DARK, SYSTEM
+}
+
 data class AppSettings(
     val temperatureUnit: TemperatureUnit = TemperatureUnit.CELSIUS,
     val pressureUnit: PressureUnit = PressureUnit.HPA,
@@ -7,8 +11,10 @@ data class AppSettings(
     val timeFormat: TimeFormat = TimeFormat.TWENTY_FOUR_HOUR,
     val defaultCity: String = "Novi Sad",
     val locationEnabled: Boolean = false,
-    val notificationsEnabled: Boolean = false
+    val notificationsEnabled: Boolean = false,
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
+
 
 enum class TemperatureUnit(val label: String) {
     CELSIUS("°C"),

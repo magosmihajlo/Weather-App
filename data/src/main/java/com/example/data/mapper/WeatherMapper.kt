@@ -15,8 +15,8 @@ fun WeatherResponseDto.toDomain(): WeatherInfo {
     return WeatherInfo(
         temperatureCelsius = main.temp.round1Decimal(),
         feelsLikeCelsius = main.feelsLike.round1Decimal(),
-        minTemperatureCelsius = main.tempMin.round1Decimal(),
-        maxTemperatureCelsius = main.tempMax.round1Decimal(),
+        minTemperatureCelsius = if (main.tempMin == 0.0) main.temp else main.tempMin,
+        maxTemperatureCelsius = if (main.tempMax == 0.0) main.temp else main.tempMax,
         humidityPercent = main.humidity,
         pressureHPa = main.pressure,
         seaLevelPressureHPa = main.seaLevel,

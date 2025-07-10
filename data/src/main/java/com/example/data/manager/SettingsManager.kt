@@ -10,6 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.domain.model.AppSettings
 import com.example.domain.model.PressureUnit
 import com.example.domain.model.TemperatureUnit
+import com.example.domain.model.ThemeMode
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
 import com.example.domain.repository.AppSettingsRepository
@@ -33,6 +34,8 @@ class SettingsManager @Inject constructor(@ApplicationContext private val contex
         val timeFormat = stringPreferencesKey("time_format")
         val locationEnabled = booleanPreferencesKey("location_enabled")
         val notificationsEnabled = booleanPreferencesKey("notifications_enabled")
+        val themeMode = stringPreferencesKey("theme_mode")
+
     }
 
     override val appSettingsFlow: Flow<AppSettings> = dataStore.data
@@ -43,8 +46,9 @@ class SettingsManager @Inject constructor(@ApplicationContext private val contex
                 windSpeedUnit = WindSpeedUnit.valueOf(preferences[PreferencesKeys.windSpeedUnit] ?: WindSpeedUnit.KM_PER_HOUR.name),
                 timeFormat = TimeFormat.valueOf(preferences[PreferencesKeys.timeFormat] ?: TimeFormat.TWENTY_FOUR_HOUR.name),
                 locationEnabled = preferences[PreferencesKeys.locationEnabled] ?: false,
-                notificationsEnabled = preferences[PreferencesKeys.notificationsEnabled] ?: false
-            )
+                notificationsEnabled = preferences[PreferencesKeys.notificationsEnabled] ?: false,
+                themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.themeMode] ?: ThemeMode.SYSTEM.name)
+                )
         }
 
     override suspend fun updateTemperatureUnit(unit: TemperatureUnit) {
@@ -82,4 +86,11 @@ class SettingsManager @Inject constructor(@ApplicationContext private val contex
             preferences[PreferencesKeys.notificationsEnabled] = enabled
         }
     }
+
+    override suspend fun updateThemeMode(mode: ThemeMode) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.themeMode] = mode.name
+        }
+    }
+
 }

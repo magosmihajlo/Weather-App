@@ -1,10 +1,13 @@
 package com.example.presentation.viewmodel
 
+// TODO: Main thing for now. ViewModel is too packed
+
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WeatherForecast
+import com.example.domain.model.WeatherInfo
 import com.example.domain.usecase.GetAppSettingsUseCase
 import com.example.domain.usecase.GetForecastUseCase
 import com.example.domain.usecase.GetRecentCitiesUseCase
@@ -47,6 +50,8 @@ class WeatherViewModel @Inject constructor(
     private val _requestLocationPermission = MutableStateFlow(false)
     val requestLocationPermission = _requestLocationPermission.asStateFlow()
 
+    private var latestWeatherInfo: WeatherInfo? = null
+
     init {
         observeAppSettings()
         observeRecentCities()
@@ -61,6 +66,8 @@ class WeatherViewModel @Inject constructor(
                             val forecast = getForecastUseCase(weatherInfo.latitude, weatherInfo.longitude)
                             val settings = getAppSettingsUseCase().first()
                             val displayData = weatherUiMapper.map(weatherInfo, settings)
+
+                            latestWeatherInfo = weatherInfo
 
                             _currentCity.value = weatherInfo.cityName
                             _forecastState.value = forecast
@@ -84,6 +91,18 @@ class WeatherViewModel @Inject constructor(
                 }
                 .collect { state ->
                     _uiState.value = state
+                }
+        }
+
+        viewModelScope.launch {
+            getAppSettingsUseCase()
+                .distinctUntilChanged()
+                .collect { settings ->
+                    latestWeatherInfo?.let { info ->
+                        val displayData = weatherUiMapper.map(info, settings)
+                        _uiState.value = WeatherUiState.Success(displayData)
+                        Log.d("WeatherViewModel", "Re-mapped UI with new settings: ${settings.temperatureUnit}")
+                    }
                 }
         }
     }
