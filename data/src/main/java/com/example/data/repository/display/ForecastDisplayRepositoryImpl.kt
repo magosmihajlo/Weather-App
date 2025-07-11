@@ -20,7 +20,7 @@ class ForecastDisplayRepositoryImpl @Inject constructor(
     ): List<HourlyWeatherDisplayData> {
         return hourly.map {
             HourlyWeatherDisplayData(
-                time = TimeFormatter.formatTime(it.timeEpoch * 1000, timezoneOffsetSeconds, settings.timeFormat),
+                time = TimeFormatter.formatTime(it.timeEpoch, timezoneOffsetSeconds, settings.timeFormat),
                 temperature = String.format("%.1f%s", converter.convertTemperature(it.temperature, settings.temperatureUnit), settings.temperatureUnit.label),
                 iconUrl = "https://openweathermap.org/img/wn/${it.iconCode}@2x.png",
                 description = it.description

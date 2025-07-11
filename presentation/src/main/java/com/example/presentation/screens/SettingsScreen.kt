@@ -22,7 +22,6 @@ import com.example.domain.model.WindSpeedUnit
 import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.viewmodel.SettingsViewModel
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -14,7 +14,7 @@ object TimeFormatter {
         )
 
         val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds)
-        return Instant.ofEpochMilli(timestamp)
+        return Instant.ofEpochSecond(timestamp)
             .atOffset(zoneOffset)
             .format(formatter)
     }

@@ -1,10 +1,8 @@
 package com.example.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,15 +15,16 @@ import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.CityWeatherCard
 import com.example.presentation.screens.components.StatefulScreenContent
 import com.example.presentation.screens.components.WeatherScaffold
+import com.example.presentation.viewmodel.CitiesViewModel
 import com.example.presentation.viewmodel.WeatherViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitiesScreen(
     navController: NavController,
-    viewModel: WeatherViewModel = hiltViewModel()
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    citiesViewModel: CitiesViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.recentCitiesUiState.collectAsStateWithLifecycle()
+    val uiState by citiesViewModel.uiState.collectAsStateWithLifecycle()
 
     WeatherScaffold(
         navController = navController,
@@ -45,8 +44,7 @@ fun CitiesScreen(
             ) {
                 items(cities) { city ->
                     CityWeatherCard(weatherData = city) {
-                        Log.d("ERROR CHECK", "Clicked on city: ${city.locationName}")
-                        viewModel.searchWeather(city.locationName)
+                        weatherViewModel.searchWeather(city.locationName)
                         navController.navigateWithState(AppScreen.MainScreen.route)
                     }
                 }

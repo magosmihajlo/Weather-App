@@ -49,13 +49,11 @@ fun AppNavGraph(
                 MainScreen(navController = navController, viewModel = weatherViewModel)
             }
             composable(AppScreen.DetailsScreen.route) {
-                DetailsScreen(
-                    navController = navController,
-                    viewModel = weatherViewModel
+                DetailsScreen(navController = navController, viewModel = weatherViewModel
                 )
             }
             composable(AppScreen.CitiesScreen.route) {
-                CitiesScreen(navController = navController, viewModel = weatherViewModel)
+                CitiesScreen(navController = navController, weatherViewModel = weatherViewModel)
             }
             composable(AppScreen.SettingsScreen.route) {
                 SettingsScreen(navController = navController, viewModel = settingsViewModel)

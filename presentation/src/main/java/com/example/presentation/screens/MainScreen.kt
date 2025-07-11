@@ -1,6 +1,7 @@
 package com.example.presentation.screens
 
 import android.Manifest
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -18,38 +19,45 @@ import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.*
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.WeatherViewModel
-import com.example.domain.model.WeatherDisplayData
+import com.example.presentation.viewmodel.LocationResult
+import com.example.presentation.viewmodel.LocationViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun MainScreen(
     navController: NavController,
-    viewModel: WeatherViewModel = hiltViewModel()
+    viewModel: WeatherViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
-    val uiState: WeatherUiState<WeatherDisplayData> by viewModel.uiState.collectAsStateWithLifecycle()
-    val requestLocationPermission by viewModel.requestLocationPermission.collectAsStateWithLifecycle()
-    val forecast by viewModel.forecastState.collectAsStateWithLifecycle()
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val hourlyDisplay by viewModel.hourlyDisplayState.collectAsStateWithLifecycle()
     val dailyDisplay by viewModel.dailyDisplayState.collectAsStateWithLifecycle()
-
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        viewModel.onLocationPermissionResult(granted)
+        val granted = permissions.values.any { it }
+        locationViewModel.onPermissionResult(granted)
     }
 
-    LaunchedEffect(requestLocationPermission) {
-        if (requestLocationPermission) {
+    LaunchedEffect(locationViewModel) {
+        locationViewModel.permissionRequestFlow.onEach {
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
-        }
+        }.launchIn(this)
+
+        locationViewModel.locationResultFlow.onEach { result ->
+            when (result) {
+                is LocationResult.Success -> viewModel.searchWeather(result.cityName)
+                is LocationResult.Error -> Log.e("MainScreen", result.message)
+                is LocationResult.Loading -> { }
+            }
+        }.launchIn(this)
     }
 
     WeatherScaffold(
