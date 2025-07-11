@@ -1,4 +1,4 @@
-package com.example.domain.repository
+package com.example.domain.repository.database
 
 import com.example.domain.model.RecentCity
 import kotlinx.coroutines.flow.Flow

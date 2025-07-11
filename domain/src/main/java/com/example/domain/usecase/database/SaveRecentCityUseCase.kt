@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.database
 
-import com.example.domain.repository.RecentCityRepository
+import com.example.domain.repository.database.RecentCityRepository
 import javax.inject.Inject
 
 class SaveRecentCityUseCase @Inject constructor(

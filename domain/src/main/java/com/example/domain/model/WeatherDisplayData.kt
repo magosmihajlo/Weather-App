@@ -1,10 +1,5 @@
 package com.example.domain.model
 
-import java.time.format.DateTimeFormatter
-
-val hourMinuteFormatter12 = DateTimeFormatter.ofPattern("hh:mm a")
-val hourMinuteFormatter24 = DateTimeFormatter.ofPattern("HH:mm")
-
 data class WeatherDisplayData(
     val locationName: String,
     val description: String,

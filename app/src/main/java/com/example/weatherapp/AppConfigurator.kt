@@ -1,6 +1,6 @@
 package com.example.weatherapp
 
-import com.example.di.DiConfigurator
+import com.example.domain.repository.DiConfigurator
 import javax.inject.Inject
 import javax.inject.Singleton
 

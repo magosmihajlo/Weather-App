@@ -26,5 +26,6 @@ data class WeatherInfo(
     val rainVolumeLast1hMm: Double?,
     val rainVolumeLast3hMm: Double?,
     val snowVolumeLast1hMm: Double?,
-    val snowVolumeLast3hMm: Double?
+    val snowVolumeLast3hMm: Double?,
+    val timezoneOffsetSeconds: Int
 )

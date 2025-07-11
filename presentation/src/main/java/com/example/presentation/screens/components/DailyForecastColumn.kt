@@ -14,57 +14,48 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.domain.model.DailyWeather
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.example.domain.model.DailyWeatherDisplayData
 
 @Composable
-fun DailyForecastColumn(daily: List<DailyWeather>) {
+fun DailyForecastColumn(daily: List<DailyWeatherDisplayData>) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         daily.forEach { day ->
-            val date = remember(day.dateEpoch) {
-                Instant.ofEpochSecond(day.dateEpoch)
-                    .atZone(ZoneId.systemDefault())
-                    .format(DateTimeFormatter.ofPattern("EEE"))
+            val minTemp = remember(day.minTemperature) {
+                day.minTemperature.filter { it.isDigit() || it == '.' || it == '-' }.toFloatOrNull() ?: 0f
             }
-
-            val min = day.minTemp.toInt()
-            val max = day.maxTemp.toInt()
+            val maxTemp = remember(day.maxTemperature) {
+                day.maxTemperature.filter { it.isDigit() || it == '.' || it == '-' }.toFloatOrNull() ?: 0f
+            }
+            val rangeWidth = (maxTemp - minTemp).coerceAtLeast(0f) * 3f
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = date,
-                    modifier = Modifier.width(40.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text(text = day.dayName, modifier = Modifier.width(40.dp))
 
                 AsyncImage(
-                    model = "https://openweathermap.org/img/wn/${day.iconCode}@2x.png",
+                    model = day.iconUrl,
                     contentDescription = day.description,
                     modifier = Modifier
                         .size(32.dp)
                         .padding(horizontal = 8.dp)
                 )
 
-                Spacer(modifier = Modifier.width(75.dp))
+                Spacer(modifier = Modifier.width(55.dp))
 
                 Text(
-                    text = "$min°",
-                    modifier = Modifier.width(40.dp),
+                    text = day.minTemperature,
+                    modifier = Modifier.width(60.dp),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Box(
                     modifier = Modifier
                         .height(6.dp)
-                        .width((max * 3).dp.coerceAtMost(180.dp))
+                        .width(rangeWidth.dp.coerceAtMost(180.dp))
                         .padding(horizontal = 4.dp)
                         .background(
                             brush = Brush.horizontalGradient(
@@ -78,9 +69,9 @@ fun DailyForecastColumn(daily: List<DailyWeather>) {
                 )
 
                 Text(
-                    text = "$max°",
+                    text = day.maxTemperature,
                     modifier = Modifier
-                        .width(40.dp),
+                        .width(60.dp),
                     textAlign = TextAlign.End,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -88,3 +79,4 @@ fun DailyForecastColumn(daily: List<DailyWeather>) {
         }
     }
 }
+

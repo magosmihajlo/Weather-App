@@ -1,6 +1,6 @@
 package com.example.weatherapp.di
 
-import com.example.di.DiConfigurator
+import com.example.domain.repository.DiConfigurator
 import com.example.weatherapp.AppConfigurator
 import dagger.Binds
 import dagger.Module

@@ -1,21 +1,21 @@
 package com.example.data.mapper
 
 import com.example.domain.model.TimeFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 object TimeFormatter {
 
-    fun formatTime(timestampMillis: Long, format: TimeFormat): String {
-        val pattern = when (format) {
-            TimeFormat.TWELVE_HOUR -> "h:mm a"
-            TimeFormat.TWENTY_FOUR_HOUR -> "HH:mm"
-        }
+    fun formatTime(timestamp: Long, offsetSeconds: Int, format: TimeFormat): String {
+        val formatter = DateTimeFormatter.ofPattern(
+            if (format == TimeFormat.TWENTY_FOUR_HOUR) "HH:mm"
+            else "h:mm a"
+        )
 
-        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
-        sdf.timeZone = TimeZone.getDefault()
-        return sdf.format(Date(timestampMillis))
+        val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds)
+        return Instant.ofEpochMilli(timestamp)
+            .atOffset(zoneOffset)
+            .format(formatter)
     }
 }

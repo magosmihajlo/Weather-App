@@ -5,8 +5,8 @@ import com.example.domain.model.AppSettings
 import com.example.domain.model.TemperatureUnit
 import com.example.domain.model.WeatherDisplayData
 import com.example.domain.model.WeatherInfo
-import com.example.domain.repository.UnitConversionRepository
-import com.example.domain.repository.WeatherDisplayRepository
+import com.example.domain.repository.settings.UnitConversionRepository
+import com.example.domain.repository.display.WeatherDisplayRepository
 import javax.inject.Inject
 
 class WeatherDisplayRepositoryImpl @Inject constructor(
@@ -38,8 +38,9 @@ class WeatherDisplayRepositoryImpl @Inject constructor(
                 unitConverter.convertPressure(weather.pressureHPa.toDouble(), settings.pressureUnit)
             ),
             visibility = "Visibility: ${weather.visibilityMeters / 1000.0} km",
-            sunriseTime = "Sunrise: ${TimeFormatter.formatTime(weather.sunriseTime, settings.timeFormat)}",
-            sunsetTime = "Sunset: ${TimeFormatter.formatTime(weather.sunsetTime, settings.timeFormat)}"
+            sunriseTime = "Sunrise: ${TimeFormatter.formatTime(weather.sunriseTime, weather.timezoneOffsetSeconds, settings.timeFormat)}",
+            sunsetTime = "Sunset: ${TimeFormatter.formatTime(weather.sunsetTime, weather.timezoneOffsetSeconds, settings.timeFormat)}"
+
         )
     }
 

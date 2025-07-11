@@ -9,7 +9,7 @@ import com.example.domain.model.TemperatureUnit
 import com.example.domain.model.ThemeMode
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
-import com.example.domain.repository.AppSettingsRepository
+import com.example.domain.repository.settings.AppSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

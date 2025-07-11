@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
-import com.example.domain.repository.LocationProvider
+import com.example.domain.repository.location.LocationProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource

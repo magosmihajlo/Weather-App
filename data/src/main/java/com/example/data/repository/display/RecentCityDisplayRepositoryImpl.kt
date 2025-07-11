@@ -3,8 +3,8 @@ package com.example.data.repository.display
 import com.example.domain.model.AppSettings
 import com.example.domain.model.RecentCity
 import com.example.domain.model.WeatherDisplayData
-import com.example.domain.repository.RecentCityDisplayRepository
-import com.example.domain.repository.UnitConversionRepository
+import com.example.domain.repository.display.RecentCityDisplayRepository
+import com.example.domain.repository.settings.UnitConversionRepository
 import javax.inject.Inject
 
 class RecentCityDisplayRepositoryImpl @Inject constructor(

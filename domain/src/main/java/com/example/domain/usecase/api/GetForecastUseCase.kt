@@ -1,7 +1,7 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.api
 
 import com.example.domain.model.WeatherForecast
-import com.example.domain.repository.WeatherRepository
+import com.example.domain.repository.api.WeatherRepository
 import javax.inject.Inject
 
 class GetForecastUseCase @Inject constructor(

@@ -1,7 +1,6 @@
 package com.example.presentation.screens
 
 import android.Manifest
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -29,6 +28,10 @@ fun MainScreen(
     val uiState: WeatherUiState<WeatherDisplayData> by viewModel.uiState.collectAsStateWithLifecycle()
     val requestLocationPermission by viewModel.requestLocationPermission.collectAsStateWithLifecycle()
     val forecast by viewModel.forecastState.collectAsStateWithLifecycle()
+
+    val hourlyDisplay by viewModel.hourlyDisplayState.collectAsStateWithLifecycle()
+    val dailyDisplay by viewModel.dailyDisplayState.collectAsStateWithLifecycle()
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -67,9 +70,6 @@ fun MainScreen(
             }
 
             item {
-                if (uiState is WeatherUiState.Success) {
-                    Log.d("ERROR CHECK", "Showing weather for: ${(uiState as WeatherUiState.Success).data.locationName}")
-                }
                 WeatherContentStateView(
                     uiState = uiState,
                     modifier = Modifier.fillMaxWidth(),
@@ -91,19 +91,21 @@ fun MainScreen(
                 }
             }
 
-            forecast?.let { forecast ->
+            if (hourlyDisplay.isNotEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("Hourly Forecast", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
-                    HourlyForecastRow(forecast.hourly)
+                    HourlyForecastRow(hourly = hourlyDisplay)
                 }
+            }
 
+            if (dailyDisplay.isNotEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("6-Day Forecast", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
-                    DailyForecastColumn(forecast.daily)
+                    DailyForecastColumn(daily = dailyDisplay)
                 }
             }
         }

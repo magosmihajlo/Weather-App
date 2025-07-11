@@ -4,7 +4,7 @@ import com.example.data.mapper.toDomain
 import com.example.data.remote.api.WeatherApiService
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
-import com.example.domain.repository.WeatherRepository
+import com.example.domain.repository.api.WeatherRepository
 import javax.inject.Inject
 import javax.inject.Named
 

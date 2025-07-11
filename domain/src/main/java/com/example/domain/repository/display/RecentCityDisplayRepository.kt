@@ -1,4 +1,4 @@
-package com.example.domain.repository
+package com.example.domain.repository.display
 
 import com.example.domain.model.AppSettings
 import com.example.domain.model.RecentCity

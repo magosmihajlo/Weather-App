@@ -1,24 +1,27 @@
 package com.example.di.module
 
-import com.example.domain.repository.AppSettingsRepository
-import com.example.domain.repository.CityNameResolver
-import com.example.domain.repository.LocationProvider
-import com.example.domain.repository.RecentCityDisplayRepository
-import com.example.domain.repository.RecentCityRepository
-import com.example.domain.repository.UnitConversionRepository
-import com.example.domain.repository.WeatherDisplayRepository
-import com.example.domain.repository.WeatherRepository
-import com.example.domain.usecase.conversion.ConvertPressureUseCase
-import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
-import com.example.domain.usecase.conversion.ConvertWindSpeedUseCase
-import com.example.domain.usecase.GetAppSettingsUseCase
-import com.example.domain.usecase.GetCityNameUseCase
-import com.example.domain.usecase.GetCurrentLocationUseCase
-import com.example.domain.usecase.GetRecentCitiesUseCase
-import com.example.domain.usecase.GetWeatherUseCase
-import com.example.domain.usecase.MapRecentCitiesToDisplayUseCase
-import com.example.domain.usecase.MapWeatherToDisplayUseCase
-import com.example.domain.usecase.SaveRecentCityUseCase
+import com.example.domain.repository.settings.AppSettingsRepository
+import com.example.domain.repository.location.CityNameResolver
+import com.example.domain.repository.display.ForecastDisplayRepository
+import com.example.domain.repository.location.LocationProvider
+import com.example.domain.repository.display.RecentCityDisplayRepository
+import com.example.domain.repository.database.RecentCityRepository
+import com.example.domain.repository.settings.UnitConversionRepository
+import com.example.domain.repository.display.WeatherDisplayRepository
+import com.example.domain.repository.api.WeatherRepository
+import com.example.domain.usecase.settings.ConvertPressureUseCase
+import com.example.domain.usecase.settings.ConvertTemperatureUseCase
+import com.example.domain.usecase.settings.ConvertWindSpeedUseCase
+import com.example.domain.usecase.settings.GetAppSettingsUseCase
+import com.example.domain.usecase.location.GetCityNameUseCase
+import com.example.domain.usecase.location.GetCurrentLocationUseCase
+import com.example.domain.usecase.database.GetRecentCitiesUseCase
+import com.example.domain.usecase.api.GetWeatherUseCase
+import com.example.domain.usecase.display.MapDailyForecastUseCase
+import com.example.domain.usecase.display.MapHourlyForecastUseCase
+import com.example.domain.usecase.display.MapRecentCitiesUseCase
+import com.example.domain.usecase.display.MapWeatherUseCase
+import com.example.domain.usecase.database.SaveRecentCityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -93,15 +96,28 @@ object UseCaseModule {
     @Singleton
     fun provideMapWeatherToDisplayUseCase(
         weatherDisplayRepository: WeatherDisplayRepository
-    ): MapWeatherToDisplayUseCase {
-        return MapWeatherToDisplayUseCase(weatherDisplayRepository)
+    ): MapWeatherUseCase {
+        return MapWeatherUseCase(weatherDisplayRepository)
     }
 
     @Provides
     @Singleton
     fun provideMapRecentCitiesToDisplayUseCase(
         repository: RecentCityDisplayRepository
-    ): MapRecentCitiesToDisplayUseCase = MapRecentCitiesToDisplayUseCase(repository)
+    ): MapRecentCitiesUseCase = MapRecentCitiesUseCase(repository)
+
+
+    @Provides
+    @Singleton
+    fun provideMapHourlyForecastToDisplayUseCase(
+        repository: ForecastDisplayRepository
+    ): MapHourlyForecastUseCase = MapHourlyForecastUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideMapDailyForecastToDisplayUseCase(
+        repository: ForecastDisplayRepository
+    ): MapDailyForecastUseCase = MapDailyForecastUseCase(repository)
 
 
 }

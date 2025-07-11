@@ -1,7 +1,7 @@
 package com.example.data.repository.location
 
 import android.location.Geocoder
-import com.example.domain.repository.CityNameResolver
+import com.example.domain.repository.location.CityNameResolver
 import javax.inject.Inject
 
 class CityNameResolverImpl @Inject constructor(

@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.location
 
-import com.example.domain.repository.LocationProvider
+import com.example.domain.repository.location.LocationProvider
 import javax.inject.Inject
 
 class HasLocationPermissionUseCase @Inject constructor(

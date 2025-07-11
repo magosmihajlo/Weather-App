@@ -4,7 +4,7 @@ import com.example.data.local.dao.RecentCityDao
 import com.example.data.local.entity.RecentCityEntity
 import com.example.data.mapper.toDomain
 import com.example.domain.model.RecentCity
-import com.example.domain.repository.RecentCityRepository
+import com.example.domain.repository.database.RecentCityRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

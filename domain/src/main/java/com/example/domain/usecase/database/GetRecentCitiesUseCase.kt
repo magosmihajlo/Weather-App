@@ -1,7 +1,7 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.database
 
 import com.example.domain.model.RecentCity
-import com.example.domain.repository.RecentCityRepository
+import com.example.domain.repository.database.RecentCityRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

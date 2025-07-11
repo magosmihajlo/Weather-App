@@ -1,4 +1,4 @@
-package com.example.domain.repository
+package com.example.domain.repository.api
 
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo

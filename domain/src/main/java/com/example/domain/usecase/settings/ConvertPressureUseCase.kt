@@ -1,7 +1,7 @@
-package com.example.domain.usecase.conversion
+package com.example.domain.usecase.settings
 
 import com.example.domain.model.PressureUnit
-import com.example.domain.repository.UnitConversionRepository
+import com.example.domain.repository.settings.UnitConversionRepository
 import javax.inject.Inject
 
 class ConvertPressureUseCase @Inject constructor(

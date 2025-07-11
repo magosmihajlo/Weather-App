@@ -6,21 +6,25 @@ package com.example.presentation.viewmodel
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.DailyWeatherDisplayData
+import com.example.domain.model.HourlyWeatherDisplayData
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
-import com.example.domain.usecase.GetAppSettingsUseCase
-import com.example.domain.usecase.GetCityNameUseCase
-import com.example.domain.usecase.GetCurrentLocationUseCase
-import com.example.domain.usecase.GetForecastUseCase
-import com.example.domain.usecase.GetRecentCitiesUseCase
-import com.example.domain.usecase.GetWeatherUseCase
-import com.example.domain.usecase.HasLocationPermissionUseCase
-import com.example.domain.usecase.SaveRecentCityUseCase
-import com.example.domain.usecase.conversion.ConvertTemperatureUseCase
+import com.example.domain.usecase.settings.GetAppSettingsUseCase
+import com.example.domain.usecase.location.GetCityNameUseCase
+import com.example.domain.usecase.location.GetCurrentLocationUseCase
+import com.example.domain.usecase.api.GetForecastUseCase
+import com.example.domain.usecase.database.GetRecentCitiesUseCase
+import com.example.domain.usecase.api.GetWeatherUseCase
+import com.example.domain.usecase.location.HasLocationPermissionUseCase
+import com.example.domain.usecase.database.SaveRecentCityUseCase
+import com.example.domain.usecase.settings.ConvertTemperatureUseCase
 import com.example.presentation.state.WeatherUiState
 import com.example.domain.model.WeatherDisplayData
-import com.example.domain.usecase.MapRecentCitiesToDisplayUseCase
-import com.example.domain.usecase.MapWeatherToDisplayUseCase
+import com.example.domain.usecase.display.MapDailyForecastUseCase
+import com.example.domain.usecase.display.MapHourlyForecastUseCase
+import com.example.domain.usecase.display.MapRecentCitiesUseCase
+import com.example.domain.usecase.display.MapWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,19 +38,29 @@ class WeatherViewModel @Inject constructor(
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getRecentCitiesUseCase: GetRecentCitiesUseCase,
     private val getForecastUseCase: GetForecastUseCase,
-    private val mapRecentCitiesToDisplayUseCase: MapRecentCitiesToDisplayUseCase,
+    private val mapRecentCitiesUseCase: MapRecentCitiesUseCase,
     private val convertTemperature: ConvertTemperatureUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val hasLocationPermissionUseCase: HasLocationPermissionUseCase,
     private val getCityNameUseCase: GetCityNameUseCase,
-    private val mapper: MapWeatherToDisplayUseCase
-) : ViewModel() {
+    private val mapper: MapWeatherUseCase,
+    private val mapHourlyForecastUseCase: MapHourlyForecastUseCase,
+    private val mapDailyForecastUseCase: MapDailyForecastUseCase,
+
+    ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
     val uiState = _uiState.asStateFlow()
 
     private val _forecastState = MutableStateFlow<WeatherForecast?>(null)
     val forecastState = _forecastState.asStateFlow()
+
+    private val _hourlyDisplayState = MutableStateFlow<List<HourlyWeatherDisplayData>>(emptyList())
+    val hourlyDisplayState = _hourlyDisplayState.asStateFlow()
+
+    private val _dailyDisplayState = MutableStateFlow<List<DailyWeatherDisplayData>>(emptyList())
+    val dailyDisplayState = _dailyDisplayState.asStateFlow()
+
 
     private val _recentCitiesUiState = MutableStateFlow<WeatherUiState<List<WeatherDisplayData>>>(WeatherUiState.Empty)
     val recentCitiesUiState = _recentCitiesUiState.asStateFlow()
@@ -101,6 +115,21 @@ class WeatherViewModel @Inject constructor(
             _currentCity.value = weatherInfo.cityName
             _forecastState.value = forecast
 
+            _hourlyDisplayState.value = mapHourlyForecastUseCase(
+                forecast.hourly,
+                weatherInfo.timezoneOffsetSeconds,
+                settings
+            )
+
+            _dailyDisplayState.value = mapDailyForecastUseCase(
+                forecast.daily,
+                weatherInfo.timezoneOffsetSeconds,
+                settings
+            )
+
+
+
+
             saveRecentCityUseCase(
                 weatherInfo.cityName,
                 weatherInfo.temperatureCelsius,
@@ -117,20 +146,36 @@ class WeatherViewModel @Inject constructor(
 
     private fun observeAppSettings() {
         viewModelScope.launch {
+            settingsFlow.collect { settings ->
+                latestWeatherInfo?.let {
+                    _uiState.value = WeatherUiState.Success(mapper(it, settings))
+                }
+
+                forecastState.value?.let { forecast ->
+                    _hourlyDisplayState.value = mapHourlyForecastUseCase(
+                        forecast.hourly,
+                        latestWeatherInfo?.timezoneOffsetSeconds ?: 0,
+                        settings
+                    )
+                    _dailyDisplayState.value = mapDailyForecastUseCase(
+                        forecast.daily,
+                        latestWeatherInfo?.timezoneOffsetSeconds ?: 0,
+                        settings
+                    )
+                }
+
+            }
+        }
+
+        viewModelScope.launch {
             settingsFlow
                 .map { it.locationEnabled }
                 .distinctUntilChanged()
                 .collect(::handleLocationEnabledChange)
         }
-
-        viewModelScope.launch {
-            settingsFlow.collect { settings ->
-                latestWeatherInfo?.let {
-                    _uiState.value = WeatherUiState.Success(mapper(it, settings))
-                }
-            }
-        }
     }
+
+
 
     private fun observeRecentCities() {
         viewModelScope.launch {
@@ -142,7 +187,7 @@ class WeatherViewModel @Inject constructor(
                     _recentCitiesUiState.value = if (recentCities.isEmpty()) {
                         WeatherUiState.Empty
                     } else {
-                        val displayData = mapRecentCitiesToDisplayUseCase(recentCities, settings)
+                        val displayData = mapRecentCitiesUseCase(recentCities, settings)
                         WeatherUiState.Success(displayData)
                     }
                 }

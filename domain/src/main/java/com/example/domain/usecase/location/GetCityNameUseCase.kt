@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.domain.usecase.location
 
-import com.example.domain.repository.CityNameResolver
+import com.example.domain.repository.location.CityNameResolver
 import javax.inject.Inject
 
 class GetCityNameUseCase @Inject constructor(

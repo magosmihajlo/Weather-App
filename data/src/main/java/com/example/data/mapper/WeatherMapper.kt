@@ -36,7 +36,8 @@ fun WeatherResponseDto.toDomain(): WeatherInfo {
         rainVolumeLast1hMm = rain?.last1h?.round1Decimal(),
         rainVolumeLast3hMm = rain?.last3h?.round1Decimal(),
         snowVolumeLast1hMm = snow?.last1h?.round1Decimal(),
-        snowVolumeLast3hMm = snow?.last3h?.round1Decimal()
+        snowVolumeLast3hMm = snow?.last3h?.round1Decimal(),
+        timezoneOffsetSeconds = timezone
     )
 }
 

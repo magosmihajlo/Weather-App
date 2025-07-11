@@ -3,7 +3,7 @@ package com.example.data.repository.settings
 import com.example.domain.model.PressureUnit
 import com.example.domain.model.TemperatureUnit
 import com.example.domain.model.WindSpeedUnit
-import com.example.domain.repository.UnitConversionRepository
+import com.example.domain.repository.settings.UnitConversionRepository
 import javax.inject.Inject
 
 class UnitConversionRepositoryImpl @Inject constructor() : UnitConversionRepository {
