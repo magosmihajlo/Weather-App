@@ -136,10 +136,6 @@ class WeatherViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-
-
-
-
     fun searchWeather(cityName: String) {
         if (cityName.isBlank()) {
             _uiState.value = WeatherUiState.Error("City name cannot be empty.")
@@ -148,6 +144,4 @@ class WeatherViewModel @Inject constructor(
 
         viewModelScope.launch { searchTrigger.emit(cityName) }
     }
-
-
 }

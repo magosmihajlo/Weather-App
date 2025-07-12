@@ -12,7 +12,7 @@ A modern **Android weather application** that provides real-time weather updates
 - 💉 **Dagger Hilt** – For dependency injection and lifecycle-scoped components  
 - 🌐 **OpenWeatherMap API + Retrofit** – External weather data provider  
 - 📍 **Fused Location Provider** – Device location services  
-- 🗃 **DataStore** – Persistence layer for settings and preferences  
+- 🗃 **DataStore and Room** – Persistence layer for settings and preferences and local Database
 - 🧠 **MVVM** – Modular and scalable architecture  
 - 🧭 **Navigation** – Type-safe, argument-driven in-app routing
 - 🧱 **Jetpack Compose** – Declarative UI framework, ideal for focus-aware UIs
@@ -26,7 +26,7 @@ The app is organized into well-separated layers:
 - **`domain/`** – Business logic and core models, interfaces for use cases and repositories
 - **`di/`** - Hilt modules that define how dependencies are provided and configured for injection throughout your app
 - **`data/`** – Repository implementations, data sources, and mappers  
-- **`presentation/`** – UI layer: ViewModels, UI models, mappers, utilities  
+- **`presentation/`** – UI layer: ViewModels, States, Screens and helper UI components
 
 Each layer communicates **only with the one directly below or above** it, ensuring **clean architecture** principles are respected.
 
@@ -40,7 +40,7 @@ Each layer communicates **only with the one directly below or above** it, ensuri
 4. The city name is sent to the **GetWeatherUseCase**, which queries the API.  
 5. Data is **mapped to a display model** (`WeatherDisplayData`) using injected mappers.  
 6. Results are emitted as **UI state** and rendered on screen.  
-7. Recent cities are cached and rendered via another UI state using **GetRecentCitiesUseCase**.  
+7. Recent cities are cached and rendered via another UI state using **GetRecentCitiesUseCase**. Last 5 cities are available in database.  
 8. User can also manually search for cities or change settings (units, time format, etc.), which will **reactively update UI**.
 9. Clicking on recent cities will show the weather info for that city like it was searched again
 
@@ -54,7 +54,8 @@ Each layer communicates **only with the one directly below or above** it, ensuri
 - 📍 Location support with permission handling  
 - ⚙️ Settings screen with toggleable units and formats  
 - 🔁 Fully reactive ViewModel state management  
-- 📐 Structured mapping between domain and UI layers  
+- 📐 Structured mapping between domain and UI layers 
+- 🌙 Dark/light and system theme mode support   
 
 ---
 
@@ -74,7 +75,6 @@ Each layer communicates **only with the one directly below or above** it, ensuri
 - 🔔 Notification support for severe weather alerts  
 - 🔍 Advanced search with autocomplete  
 - 📤 Shareable forecasts via text/social  
-- 🌙 Dark/light mode support  
 - 🧪 Full unit and UI test coverage  
 
 

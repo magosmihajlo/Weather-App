@@ -8,8 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.presentation.screens.components.WeatherContentStateView
-import com.example.presentation.screens.components.WeatherScaffold
+import com.example.presentation.screens.components.AppScaffold
+import com.example.presentation.screens.components.ScreenStateLayout
+import com.example.presentation.screens.components.WeatherDetails
 import com.example.presentation.viewmodel.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,17 +21,21 @@ fun DetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    WeatherScaffold(
+    AppScaffold(
         navController = navController,
         title = "Detailed Weather",
         showActions = false
     ) { padding ->
-        WeatherContentStateView(
+        ScreenStateLayout(
             uiState = uiState,
-            modifier = Modifier.padding(padding),
-            showMainInfo = true,
-            showCurrentDetails = true,
-            showFullDetails = true
-        )
+            modifier = Modifier.padding(padding)
+        ) { weatherData ->
+            WeatherDetails(
+                weatherData = weatherData,
+                showMainInfo = true,
+                showCurrentDetails = true,
+                showFullDetails = true
+            )
+        }
     }
 }

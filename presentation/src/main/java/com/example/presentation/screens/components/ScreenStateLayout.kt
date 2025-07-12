@@ -1,6 +1,8 @@
 package com.example.presentation.screens.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -9,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.presentation.state.WeatherUiState
 
 @Composable
-fun <T> StatefulScreenContent(
+fun <T> ScreenStateLayout(
     uiState: WeatherUiState<T>,
     modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit
@@ -27,7 +29,7 @@ fun <T> StatefulScreenContent(
                 color = MaterialTheme.colorScheme.error
             )
             is WeatherUiState.Success -> content(uiState.data)
-            WeatherUiState.Empty -> Text("No data available.")
+            is WeatherUiState.Empty -> Text("Search for a city to see the weather.")
         }
     }
 }

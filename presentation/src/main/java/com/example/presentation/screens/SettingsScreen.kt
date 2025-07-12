@@ -19,10 +19,10 @@ import com.example.domain.model.TemperatureUnit
 import com.example.domain.model.ThemeMode
 import com.example.domain.model.TimeFormat
 import com.example.domain.model.WindSpeedUnit
-import com.example.presentation.screens.components.WeatherScaffold
 import com.example.presentation.viewmodel.SettingsViewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.example.presentation.screens.components.AppScaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +32,7 @@ fun SettingsScreen(
 ) {
     val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
 
-    WeatherScaffold(
+    AppScaffold(
         navController = navController,
         title = "Settings",
         showActions = false

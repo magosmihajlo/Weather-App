@@ -13,25 +13,19 @@ import coil.compose.AsyncImage
 import com.example.domain.model.WeatherDisplayData
 
 @Composable
-fun WeatherDetailsContent(
+fun WeatherDetails(
     weatherData: WeatherDisplayData,
+    modifier: Modifier = Modifier,
     showMainInfo: Boolean = true,
     showCurrentDetails: Boolean = true,
     showFullDetails: Boolean = false
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
         if (showMainInfo) {
-            Text(
-                text = weatherData.locationName,
-                style = MaterialTheme.typography.headlineLarge
-            )
+            Text(text = weatherData.locationName, style = MaterialTheme.typography.headlineLarge)
             Spacer(modifier = Modifier.height(8.dp))
             AsyncImage(
                 model = weatherData.iconUrl,
@@ -39,15 +33,9 @@ fun WeatherDetailsContent(
                 modifier = Modifier.size(100.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = weatherData.temperature,
-                style = MaterialTheme.typography.displayLarge
-            )
-            Text(
-                text = weatherData.description,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = weatherData.temperature, style = MaterialTheme.typography.displayLarge)
+            Text(text = weatherData.description, style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
         if (showCurrentDetails) {

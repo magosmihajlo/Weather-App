@@ -17,9 +17,9 @@ import androidx.navigation.NavController
 import com.example.presentation.navigation.AppScreen
 import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.*
+import com.example.presentation.state.LocationState
 import com.example.presentation.state.WeatherUiState
 import com.example.presentation.viewmodel.WeatherViewModel
-import com.example.presentation.viewmodel.LocationResult
 import com.example.presentation.viewmodel.LocationViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,14 +53,14 @@ fun MainScreen(
 
         locationViewModel.locationResultFlow.onEach { result ->
             when (result) {
-                is LocationResult.Success -> viewModel.searchWeather(result.cityName)
-                is LocationResult.Error -> Log.e("MainScreen", result.message)
-                is LocationResult.Loading -> { }
+                is LocationState.Success -> viewModel.searchWeather(result.cityName)
+                is LocationState.Error -> Log.e("MainScreen", result.message)
+                is LocationState.Loading -> { }
             }
         }.launchIn(this)
     }
 
-    WeatherScaffold(
+    AppScaffold(
         navController = navController,
         title = "Weather App"
     ) { paddingValues ->
@@ -78,11 +78,15 @@ fun MainScreen(
             }
 
             item {
-                WeatherContentStateView(
+                ScreenStateLayout(
                     uiState = uiState,
-                    modifier = Modifier.fillMaxWidth(),
-                    showMainInfo = true
-                )
+                    modifier = Modifier.fillMaxWidth()
+                ) { weatherData ->
+                    WeatherDetails(
+                        weatherData = weatherData,
+                        showMainInfo = true
+                    )
+                }
             }
 
             if (uiState is WeatherUiState.Success) {

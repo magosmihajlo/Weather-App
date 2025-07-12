@@ -12,9 +12,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.presentation.navigation.AppScreen
 import com.example.presentation.navigation.navigateWithState
+import com.example.presentation.screens.components.AppScaffold
 import com.example.presentation.screens.components.CityWeatherCard
-import com.example.presentation.screens.components.StatefulScreenContent
-import com.example.presentation.screens.components.WeatherScaffold
+import com.example.presentation.screens.components.ScreenStateLayout
 import com.example.presentation.viewmodel.CitiesViewModel
 import com.example.presentation.viewmodel.WeatherViewModel
 
@@ -26,12 +26,12 @@ fun CitiesScreen(
 ) {
     val uiState by citiesViewModel.uiState.collectAsStateWithLifecycle()
 
-    WeatherScaffold(
+    AppScaffold(
         navController = navController,
         title = "Recent Cities",
         showActions = false
     ) { padding ->
-        StatefulScreenContent(
+        ScreenStateLayout(
             uiState = uiState,
             modifier = Modifier
                 .fillMaxSize()

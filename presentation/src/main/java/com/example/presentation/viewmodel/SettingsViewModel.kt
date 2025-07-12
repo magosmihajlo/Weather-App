@@ -1,6 +1,5 @@
 package com.example.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.AppSettings
@@ -31,7 +30,6 @@ class SettingsViewModel @Inject constructor(
 
     fun updateTemperatureUnit(unit: TemperatureUnit) {
         viewModelScope.launch {
-            Log.d("SettingsViewModel", "Updating temperature unit to: $unit")
             appSettingsRepository.updateTemperatureUnit(unit)
         }
     }

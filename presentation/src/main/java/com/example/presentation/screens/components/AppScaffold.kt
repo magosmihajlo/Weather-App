@@ -13,11 +13,10 @@ import com.example.presentation.navigation.navigateWithState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherScaffold(
+fun AppScaffold(
     navController: NavController,
     title: String,
     showActions: Boolean = true,
-    onBack: (() -> Unit)? = null,
     content: @Composable (paddingValues: PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -25,22 +24,18 @@ fun WeatherScaffold(
             TopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
+                    if (navController.previousBackStackEntry != null) {
+                        IconButton(onClick = { navController.navigateUp() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
                 },
                 actions = {
                     if (showActions) {
-                        IconButton(onClick = {
-                            navController.navigateWithState(AppScreen.CitiesScreen.route)
-                        }) {
+                        IconButton(onClick = { navController.navigateWithState(AppScreen.CitiesScreen.route) }) {
                             Icon(Icons.Filled.LocationOn, contentDescription = "Recent Cities")
                         }
-                        IconButton(onClick = {
-                            navController.navigateWithState(AppScreen.SettingsScreen.route)
-                        }) {
+                        IconButton(onClick = { navController.navigateWithState(AppScreen.SettingsScreen.route) }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Settings")
                         }
                     }
