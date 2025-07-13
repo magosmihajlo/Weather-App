@@ -45,7 +45,7 @@ class AppSettingsRepositoryImpl @Inject constructor(@ApplicationContext private 
                 pressureUnit = PressureUnit.valueOf(preferences[PreferencesKeys.pressureUnit] ?: PressureUnit.HPA.name),
                 windSpeedUnit = WindSpeedUnit.valueOf(preferences[PreferencesKeys.windSpeedUnit] ?: WindSpeedUnit.KM_PER_HOUR.name),
                 timeFormat = TimeFormat.valueOf(preferences[PreferencesKeys.timeFormat] ?: TimeFormat.TWENTY_FOUR_HOUR.name),
-                locationEnabled = preferences[PreferencesKeys.locationEnabled] ?: false,
+                locationEnabled = preferences[PreferencesKeys.locationEnabled] ?: true,
                 notificationsEnabled = preferences[PreferencesKeys.notificationsEnabled] ?: false,
                 themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.themeMode] ?: ThemeMode.SYSTEM.name)
                 )

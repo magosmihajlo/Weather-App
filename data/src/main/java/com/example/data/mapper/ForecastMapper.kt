@@ -1,12 +1,12 @@
 package com.example.data.mapper
 
-import com.example.data.remote.dto.ForecastDto
+import com.example.data.remote.dto.ForecastResponseDto
 import com.example.domain.model.DailyWeather
 import com.example.domain.model.HourlyWeather
 import com.example.domain.model.WeatherForecast
 import java.time.ZoneOffset
 
-fun ForecastDto.toDomain(): WeatherForecast {
+fun ForecastResponseDto.toDomain(): WeatherForecast {
     val hourlyWeather = list.take(24).map {
         HourlyWeather(
             timeEpoch = it.dt,

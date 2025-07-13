@@ -60,6 +60,7 @@ fun MainScreen(
         }.launchIn(this)
     }
 
+
     AppScaffold(
         navController = navController,
         title = "Weather App"
@@ -84,7 +85,8 @@ fun MainScreen(
                 ) { weatherData ->
                     WeatherDetails(
                         weatherData = weatherData,
-                        showMainInfo = true
+                        showMainInfo = true,
+                        showCurrentDetails = false
                     )
                 }
             }
@@ -108,7 +110,7 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("Hourly Forecast", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
-                    HourlyForecastRow(hourly = hourlyDisplay)
+                    HourlyForecast(hourly = hourlyDisplay)
                 }
             }
 
@@ -117,7 +119,7 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("6-Day Forecast", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
-                    DailyForecastColumn(daily = dailyDisplay)
+                    DailyForecast(daily = dailyDisplay)
                 }
             }
         }

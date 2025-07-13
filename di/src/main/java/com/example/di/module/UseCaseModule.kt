@@ -9,6 +9,8 @@ import com.example.domain.repository.database.RecentCityRepository
 import com.example.domain.repository.settings.UnitConversionRepository
 import com.example.domain.repository.display.WeatherDisplayRepository
 import com.example.domain.repository.api.WeatherRepository
+import com.example.domain.repository.database.UpdateCitiesRepository
+import com.example.domain.usecase.UpdateCitiesUseCase
 import com.example.domain.usecase.settings.ConvertPressureUseCase
 import com.example.domain.usecase.settings.ConvertTemperatureUseCase
 import com.example.domain.usecase.settings.ConvertWindSpeedUseCase
@@ -119,6 +121,11 @@ object UseCaseModule {
         repository: ForecastDisplayRepository
     ): MapDailyForecastUseCase = MapDailyForecastUseCase(repository)
 
+    @Provides
+    @Singleton
+    fun provideUpdateCitiesUseCase(
+        updateCitiesRepository: UpdateCitiesRepository
+    ): UpdateCitiesUseCase = UpdateCitiesUseCase(updateCitiesRepository)
 
 }
 

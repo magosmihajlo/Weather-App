@@ -17,7 +17,7 @@ import coil.compose.AsyncImage
 import com.example.domain.model.DailyWeatherDisplayData
 
 @Composable
-fun DailyForecastColumn(daily: List<DailyWeatherDisplayData>) {
+fun DailyForecast(daily: List<DailyWeatherDisplayData>) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         daily.forEach { day ->
             val minTemp = remember(day.minTemperature) {
@@ -26,7 +26,7 @@ fun DailyForecastColumn(daily: List<DailyWeatherDisplayData>) {
             val maxTemp = remember(day.maxTemperature) {
                 day.maxTemperature.filter { it.isDigit() || it == '.' || it == '-' }.toFloatOrNull() ?: 0f
             }
-            val rangeWidth = (maxTemp - minTemp).coerceAtLeast(0f) * 3f
+            val rangeWidth = (maxTemp - minTemp).coerceAtLeast(1f) * 3f
 
             Row(
                 modifier = Modifier

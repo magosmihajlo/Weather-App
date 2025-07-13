@@ -8,6 +8,7 @@ import com.example.data.repository.general.WeatherRepositoryImpl
 import com.example.data.repository.general.RecentCityRepositoryImpl
 import com.example.data.repository.settings.UnitConversionRepositoryImpl
 import com.example.data.repository.display.WeatherDisplayRepositoryImpl
+import com.example.data.repository.general.UpdateCitiesRepositoryImpl
 import com.example.data.repository.location.CityNameResolverImpl
 import com.example.data.repository.location.LocationProviderImpl
 import com.example.data.repository.settings.AppSettingsRepositoryImpl
@@ -20,6 +21,7 @@ import com.example.domain.repository.database.RecentCityRepository
 import com.example.domain.repository.settings.UnitConversionRepository
 import com.example.domain.repository.display.WeatherDisplayRepository
 import com.example.domain.repository.api.WeatherRepository
+import com.example.domain.repository.database.UpdateCitiesRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Binds
@@ -103,5 +105,10 @@ abstract class RepositoryModule {
         impl: ForecastDisplayRepositoryImpl
     ): ForecastDisplayRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindUpdateCitiesRepository(
+        impl: UpdateCitiesRepositoryImpl
+    ): UpdateCitiesRepository
 
 }

@@ -15,7 +15,7 @@ import coil.compose.AsyncImage
 import com.example.domain.model.HourlyWeatherDisplayData
 
 @Composable
-fun HourlyForecastRow(hourly: List<HourlyWeatherDisplayData>) {
+fun HourlyForecast(hourly: List<HourlyWeatherDisplayData>) {
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp)) {
         items(hourly) { hour ->
             Column(

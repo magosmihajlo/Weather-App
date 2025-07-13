@@ -1,6 +1,6 @@
 package com.example.data.remote.dto
 
-data class ForecastDto(
+data class ForecastResponseDto(
     val list: List<ForecastItemDto>
 )
 

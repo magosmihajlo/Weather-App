@@ -1,6 +1,6 @@
 package com.example.data.remote.api
 
-import com.example.data.remote.dto.ForecastDto
+import com.example.data.remote.dto.ForecastResponseDto
 import com.example.data.remote.dto.WeatherResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -20,5 +20,5 @@ interface WeatherApiService {
         @Query("lon") lon: Double,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric",
-    ): ForecastDto
+    ): ForecastResponseDto
 }

@@ -21,7 +21,9 @@ object DatabaseModule {
             application,
             CitiesDatabase::class.java,
             "weather_app_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides

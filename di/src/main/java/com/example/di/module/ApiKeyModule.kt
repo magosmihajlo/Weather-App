@@ -1,6 +1,6 @@
 package com.example.di.module
 
-import com.example.domain.repository.DiConfigurator
+import com.example.domain.DiConfigurator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

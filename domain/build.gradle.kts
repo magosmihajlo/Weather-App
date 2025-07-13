@@ -35,8 +35,8 @@ android {
 dependencies {
 
     // Coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation("javax.inject:javax.inject:1")
+    //implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

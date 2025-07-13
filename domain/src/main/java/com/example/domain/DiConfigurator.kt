@@ -1,4 +1,4 @@
-package com.example.domain.repository
+package com.example.domain
 
 interface DiConfigurator {
     fun getWeatherApiKey(): String
