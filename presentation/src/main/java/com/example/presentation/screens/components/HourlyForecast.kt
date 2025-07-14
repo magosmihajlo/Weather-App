@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -15,9 +16,13 @@ import coil.compose.AsyncImage
 import com.example.domain.model.HourlyWeatherDisplayData
 
 @Composable
-fun HourlyForecast(hourly: List<HourlyWeatherDisplayData>) {
+fun HourlyForecast(
+    hourly: List<HourlyWeatherDisplayData>,
+    listState: LazyListState
+) {
+    val limitedHourly = hourly.take(10)
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp)) {
-        items(hourly) { hour ->
+        items(limitedHourly) { hour ->
             Column(
                 modifier = Modifier.padding(end = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

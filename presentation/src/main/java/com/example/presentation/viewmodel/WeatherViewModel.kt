@@ -35,22 +35,13 @@ class WeatherViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
     val uiState: StateFlow<WeatherUiState<WeatherDisplayData>> = _uiState
-
     private val _forecastState = MutableStateFlow<WeatherForecast?>(null)
     val forecastState: StateFlow<WeatherForecast?> = _forecastState
-
     private val _hourlyDisplayState = MutableStateFlow<List<HourlyWeatherDisplayData>>(emptyList())
     val hourlyDisplayState: StateFlow<List<HourlyWeatherDisplayData>> = _hourlyDisplayState
-
     private val _dailyDisplayState = MutableStateFlow<List<DailyWeatherDisplayData>>(emptyList())
     val dailyDisplayState: StateFlow<List<DailyWeatherDisplayData>> = _dailyDisplayState
-
-    private val _requestLocationPermission = MutableStateFlow(false)
-    val requestLocationPermission: StateFlow<Boolean> = _requestLocationPermission
-
-    private val _currentCity = MutableStateFlow("Belgrade")
     private val searchTrigger = MutableSharedFlow<String>(replay = 1)
-
     private var latestWeatherInfo: WeatherInfo? = null
 
     private val settingsFlow: SharedFlow<AppSettings> =
@@ -76,7 +67,6 @@ class WeatherViewModel @Inject constructor(
         try {
             val initialWeatherInfo = getWeatherUseCase(city)
             val forecast = getForecastUseCase(initialWeatherInfo.latitude, initialWeatherInfo.longitude)
-
             val todayForecast = forecast.daily.firstOrNull()
 
             val weatherInfo = if (todayForecast != null) {
@@ -92,7 +82,6 @@ class WeatherViewModel @Inject constructor(
             val displayData = mapWeatherUseCase(weatherInfo, settings)
 
             latestWeatherInfo = weatherInfo
-            _currentCity.value = weatherInfo.cityName
             _forecastState.value = forecast
 
             _hourlyDisplayState.value = mapHourlyForecastUseCase(
@@ -141,7 +130,6 @@ class WeatherViewModel @Inject constructor(
             _uiState.value = WeatherUiState.Error("City name cannot be empty.")
             return
         }
-
         viewModelScope.launch { searchTrigger.emit(cityName) }
     }
 }

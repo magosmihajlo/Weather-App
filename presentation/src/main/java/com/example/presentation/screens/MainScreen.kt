@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val hourlyDisplay by viewModel.hourlyDisplayState.collectAsStateWithLifecycle()
     val dailyDisplay by viewModel.dailyDisplayState.collectAsStateWithLifecycle()
+    val hourlyScrollState = rememberLazyListState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -58,6 +60,10 @@ fun MainScreen(
                 is LocationState.Loading -> { }
             }
         }.launchIn(this)
+
+        if (hourlyDisplay.isNotEmpty()) {
+            hourlyScrollState.scrollToItem(0)
+        }
     }
 
 
@@ -110,7 +116,10 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("Hourly Forecast", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
-                    HourlyForecast(hourly = hourlyDisplay)
+                    HourlyForecast(
+                        hourly = hourlyDisplay,
+                        listState = hourlyScrollState
+                    )
                 }
             }
 

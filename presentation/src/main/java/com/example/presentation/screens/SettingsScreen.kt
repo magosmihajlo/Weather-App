@@ -23,12 +23,14 @@ import com.example.presentation.viewmodel.SettingsViewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import com.example.presentation.screens.components.AppScaffold
+import com.example.presentation.viewmodel.LocationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel()
 ) {
     val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
 
@@ -82,7 +84,12 @@ fun SettingsScreen(
                         label = "Notifications",
                         description = "Be aware of the weather",
                         checked = appSettings.notificationsEnabled,
-                        onCheckedChange = { viewModel.updateNotificationsEnabled(it) }
+                        onCheckedChange = { enabled ->
+                            viewModel.updateLocationEnabled(enabled)
+                            if (enabled) {
+                                locationViewModel.onLocationRequested()
+                            }
+                        }
                     )
                 }
             }
