@@ -3,8 +3,6 @@ package com.example.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.AppSettings
-import com.example.domain.model.DailyWeatherDisplayData
-import com.example.domain.model.HourlyWeatherDisplayData
 import com.example.domain.model.WeatherForecast
 import com.example.domain.model.WeatherInfo
 import com.example.domain.usecase.settings.GetAppSettingsUseCase
@@ -13,8 +11,6 @@ import com.example.domain.usecase.api.GetWeatherUseCase
 import com.example.domain.usecase.database.SaveRecentCityUseCase
 import com.example.presentation.state.WeatherUiState
 import com.example.domain.model.WeatherDisplayData
-import com.example.domain.usecase.display.MapDailyForecastUseCase
-import com.example.domain.usecase.display.MapHourlyForecastUseCase
 import com.example.domain.usecase.display.MapWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -29,20 +25,15 @@ class WeatherViewModel @Inject constructor(
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getForecastUseCase: GetForecastUseCase,
     private val mapWeatherUseCase: MapWeatherUseCase,
-    private val mapHourlyForecastUseCase: MapHourlyForecastUseCase,
-    private val mapDailyForecastUseCase: MapDailyForecastUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<WeatherUiState<WeatherDisplayData>>(WeatherUiState.Empty)
     val uiState: StateFlow<WeatherUiState<WeatherDisplayData>> = _uiState
-    private val _forecastState = MutableStateFlow<WeatherForecast?>(null)
-    val forecastState: StateFlow<WeatherForecast?> = _forecastState
-    private val _hourlyDisplayState = MutableStateFlow<List<HourlyWeatherDisplayData>>(emptyList())
-    val hourlyDisplayState: StateFlow<List<HourlyWeatherDisplayData>> = _hourlyDisplayState
-    private val _dailyDisplayState = MutableStateFlow<List<DailyWeatherDisplayData>>(emptyList())
-    val dailyDisplayState: StateFlow<List<DailyWeatherDisplayData>> = _dailyDisplayState
     private val searchTrigger = MutableSharedFlow<String>(replay = 1)
     private var latestWeatherInfo: WeatherInfo? = null
+
+    private val _forecastTrigger = MutableStateFlow<Pair<WeatherForecast, WeatherInfo>?>(null)
+    val forecastTrigger: StateFlow<Pair<WeatherForecast, WeatherInfo>?> = _forecastTrigger
 
     private val settingsFlow: SharedFlow<AppSettings> =
         getAppSettingsUseCase()
@@ -82,19 +73,8 @@ class WeatherViewModel @Inject constructor(
             val displayData = mapWeatherUseCase(weatherInfo, settings)
 
             latestWeatherInfo = weatherInfo
-            _forecastState.value = forecast
 
-            _hourlyDisplayState.value = mapHourlyForecastUseCase(
-                forecast.hourly,
-                weatherInfo.timezoneOffsetSeconds,
-                settings
-            )
-
-            _dailyDisplayState.value = mapDailyForecastUseCase(
-                forecast.daily,
-                weatherInfo.timezoneOffsetSeconds,
-                settings
-            )
+            _forecastTrigger.value = Pair(forecast, weatherInfo)
 
             saveRecentCityUseCase(
                 weatherInfo.cityName,
@@ -105,7 +85,7 @@ class WeatherViewModel @Inject constructor(
 
             emit(WeatherUiState.Success(displayData))
         } catch (e: Exception) {
-            _forecastState.value = null
+            _forecastTrigger.value = null
             emit(WeatherUiState.Error("Failed to fetch weather for $city: ${e.message ?: "Unknown error"}"))
         }
     }
@@ -116,11 +96,6 @@ class WeatherViewModel @Inject constructor(
                 latestWeatherInfo?.let {
                     _uiState.value = WeatherUiState.Success(mapWeatherUseCase(it, settings))
                 }
-                forecastState.value?.let { forecast ->
-                    val timezone = latestWeatherInfo?.timezoneOffsetSeconds ?: 0
-                    _hourlyDisplayState.value = mapHourlyForecastUseCase(forecast.hourly, timezone, settings)
-                    _dailyDisplayState.value = mapDailyForecastUseCase(forecast.daily, timezone, settings)
-                }
             }
             .launchIn(viewModelScope)
     }
@@ -130,6 +105,9 @@ class WeatherViewModel @Inject constructor(
             _uiState.value = WeatherUiState.Error("City name cannot be empty.")
             return
         }
-        viewModelScope.launch { searchTrigger.emit(cityName) }
+        viewModelScope.launch {
+            _forecastTrigger.value = null
+            searchTrigger.emit(cityName)
+        }
     }
 }

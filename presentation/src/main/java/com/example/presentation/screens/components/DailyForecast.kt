@@ -6,7 +6,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,14 +19,6 @@ import com.example.domain.model.DailyWeatherDisplayData
 fun DailyForecast(daily: List<DailyWeatherDisplayData>) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         daily.forEach { day ->
-            val minTemp = remember(day.minTemperature) {
-                day.minTemperature.filter { it.isDigit() || it == '.' || it == '-' }.toFloatOrNull() ?: 0f
-            }
-            val maxTemp = remember(day.maxTemperature) {
-                day.maxTemperature.filter { it.isDigit() || it == '.' || it == '-' }.toFloatOrNull() ?: 0f
-            }
-            val rangeWidth = (maxTemp - minTemp).coerceAtLeast(1f) * 3f
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -55,7 +46,7 @@ fun DailyForecast(daily: List<DailyWeatherDisplayData>) {
                 Box(
                     modifier = Modifier
                         .height(6.dp)
-                        .width(rangeWidth.dp.coerceAtMost(180.dp))
+                        .width(day.rangeWidthDp.dp)
                         .padding(horizontal = 4.dp)
                         .background(
                             brush = Brush.horizontalGradient(
@@ -70,8 +61,7 @@ fun DailyForecast(daily: List<DailyWeatherDisplayData>) {
 
                 Text(
                     text = day.maxTemperature,
-                    modifier = Modifier
-                        .width(60.dp),
+                    modifier = Modifier.width(60.dp),
                     textAlign = TextAlign.End,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -79,4 +69,5 @@ fun DailyForecast(daily: List<DailyWeatherDisplayData>) {
         }
     }
 }
+
 

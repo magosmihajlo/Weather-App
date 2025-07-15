@@ -25,6 +25,7 @@ import com.example.presentation.screens.DetailsScreen
 import com.example.presentation.screens.MainScreen
 import com.example.presentation.screens.CitiesScreen
 import com.example.presentation.screens.SettingsScreen
+import com.example.presentation.viewmodel.ForecastViewModel
 import com.example.presentation.viewmodel.SettingsViewModel
 import com.example.presentation.viewmodel.WeatherViewModel
 
@@ -34,6 +35,8 @@ fun AppNavGraph(
 ) {
     val weatherViewModel: WeatherViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val forecastViewModel: ForecastViewModel = hiltViewModel()
+
 
     Scaffold(
         bottomBar = {
@@ -46,7 +49,11 @@ fun AppNavGraph(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(AppScreen.MainScreen.route) {
-                MainScreen(navController = navController, viewModel = weatherViewModel)
+                MainScreen(
+                    navController = navController,
+                    weatherViewModel = weatherViewModel,
+                    forecastViewModel = forecastViewModel
+                )
             }
             composable(AppScreen.DetailsScreen.route) {
                 DetailsScreen(navController = navController, viewModel = weatherViewModel

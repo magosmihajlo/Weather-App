@@ -7,7 +7,7 @@ import com.example.domain.usecase.location.GetCityNameUseCase
 import com.example.domain.usecase.location.GetCurrentLocationUseCase
 import com.example.domain.usecase.location.HasLocationPermissionUseCase
 import com.example.domain.usecase.settings.GetAppSettingsUseCase
-import com.example.domain.usecase.settings.UpdateLocationEnabledUseCase
+import com.example.domain.usecase.settings.UpdateAppSettingsUseCase
 import com.example.presentation.state.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -23,7 +23,7 @@ class LocationViewModel @Inject constructor(
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val getCityNameUseCase: GetCityNameUseCase,
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
-    private val updateLocationEnabledUseCase: UpdateLocationEnabledUseCase
+    private val updateAppSettingsUseCase: UpdateAppSettingsUseCase
 ) : ViewModel() {
 
     private val _permissionRequestChannel = Channel<Unit>()
@@ -60,7 +60,7 @@ class LocationViewModel @Inject constructor(
             if (granted) {
                 fetchLocation()
             } else {
-                updateLocationEnabledUseCase(false)
+                updateAppSettingsUseCase.updateLocationEnabled(false)
                 _locationResultChannel.send(LocationState.Error("Location permission denied."))
             }
         }

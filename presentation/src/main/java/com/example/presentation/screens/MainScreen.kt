@@ -20,6 +20,7 @@ import com.example.presentation.navigation.navigateWithState
 import com.example.presentation.screens.components.*
 import com.example.presentation.state.LocationState
 import com.example.presentation.state.WeatherUiState
+import com.example.presentation.viewmodel.ForecastViewModel
 import com.example.presentation.viewmodel.WeatherViewModel
 import com.example.presentation.viewmodel.LocationViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -28,12 +29,13 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun MainScreen(
     navController: NavController,
-    viewModel: WeatherViewModel = hiltViewModel(),
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    forecastViewModel: ForecastViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val hourlyDisplay by viewModel.hourlyDisplayState.collectAsStateWithLifecycle()
-    val dailyDisplay by viewModel.dailyDisplayState.collectAsStateWithLifecycle()
+    val uiState by weatherViewModel.uiState.collectAsStateWithLifecycle()
+    val hourlyDisplay by forecastViewModel.hourlyDisplayState.collectAsStateWithLifecycle()
+    val dailyDisplay by forecastViewModel.dailyDisplayState.collectAsStateWithLifecycle()
     val hourlyScrollState = rememberLazyListState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -43,27 +45,36 @@ fun MainScreen(
         locationViewModel.onPermissionResult(granted)
     }
 
-    LaunchedEffect(locationViewModel) {
-        locationViewModel.permissionRequestFlow.onEach {
-            permissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-        }.launchIn(this)
-
-        locationViewModel.locationResultFlow.onEach { result ->
-            when (result) {
-                is LocationState.Success -> viewModel.searchWeather(result.cityName)
-                is LocationState.Error -> Log.e("MainScreen", result.message)
-                is LocationState.Loading -> { }
+    LaunchedEffect(true) {
+        weatherViewModel.forecastTrigger
+            .onEach { trigger ->
+                trigger?.let { (forecast, info) ->
+                    forecastViewModel.updateForecast(forecast, info)
+                    hourlyScrollState.scrollToItem(0)
+                } ?: forecastViewModel.clearForecast()
             }
-        }.launchIn(this)
+            .launchIn(this)
 
-        if (hourlyDisplay.isNotEmpty()) {
-            hourlyScrollState.scrollToItem(0)
-        }
+        locationViewModel.permissionRequestFlow
+            .onEach {
+                permissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
+            .launchIn(this)
+
+        locationViewModel.locationResultFlow
+            .onEach { result ->
+                when (result) {
+                    is LocationState.Success -> weatherViewModel.searchWeather(result.cityName)
+                    is LocationState.Error -> Log.e("MainScreen", result.message)
+                    is LocationState.Loading -> {}
+                }
+            }
+            .launchIn(this)
     }
 
 
@@ -80,7 +91,7 @@ fun MainScreen(
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             item {
-                CitySearchBar(onSearch = viewModel::searchWeather)
+                CitySearchBar(onSearch = weatherViewModel::searchWeather)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 

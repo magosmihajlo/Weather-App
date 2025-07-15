@@ -25,7 +25,6 @@ import com.example.domain.usecase.display.MapRecentCitiesUseCase
 import com.example.domain.usecase.display.MapWeatherUseCase
 import com.example.domain.usecase.database.SaveRecentCityUseCase
 import com.example.domain.usecase.settings.UpdateAppSettingsUseCase
-import com.example.domain.usecase.settings.UpdateLocationEnabledUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -134,12 +133,6 @@ object UseCaseModule {
     fun provideUpdateAppSettingsUseCase(
         appSettingsRepository: AppSettingsRepository
     ): UpdateAppSettingsUseCase = UpdateAppSettingsUseCase(appSettingsRepository)
-
-    @Provides
-    @Singleton
-    fun provideUpdateLocationEnabledUseCase(
-        appSettingsRepository: AppSettingsRepository
-    ): UpdateLocationEnabledUseCase = UpdateLocationEnabledUseCase(appSettingsRepository)
 
 }
 

@@ -5,5 +5,6 @@ data class DailyWeatherDisplayData(
     val minTemperature: String,
     val maxTemperature: String,
     val iconUrl: String,
-    val description: String
+    val description: String,
+    val rangeWidthDp: Double
 )

@@ -37,12 +37,17 @@ class ForecastDisplayRepositoryImpl @Inject constructor(
         val zone = ZoneOffset.ofTotalSeconds(timezoneOffsetSeconds)
 
         return daily.map {
+            val minTemp = converter.convertTemperature(it.minTemp, settings.temperatureUnit)
+            val maxTemp = converter.convertTemperature(it.maxTemp, settings.temperatureUnit)
+            val rangeWidth = (maxTemp - minTemp).coerceAtLeast(1.0) * 3f // precomputed width
+
             DailyWeatherDisplayData(
                 dayName = Instant.ofEpochSecond(it.dateEpoch).atZone(zone).format(formatter),
                 minTemperature = "Min: %.1f%s".format(converter.convertTemperature(it.minTemp, settings.temperatureUnit), settings.temperatureUnit.label),
                 maxTemperature = "Max: %.1f%s".format(converter.convertTemperature(it.maxTemp, settings.temperatureUnit), settings.temperatureUnit.label),
                 iconUrl = "https://openweathermap.org/img/wn/${it.iconCode}@2x.png",
-                description = it.description
+                description = it.description,
+                rangeWidthDp = rangeWidth.coerceAtMost(180.0)
             )
         }
     }
