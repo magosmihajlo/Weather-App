@@ -2,26 +2,23 @@ package com.example.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.AppSettings
-import com.example.domain.model.PressureUnit
-import com.example.domain.model.TemperatureUnit
-import com.example.domain.model.ThemeMode
-import com.example.domain.model.TimeFormat
-import com.example.domain.model.WindSpeedUnit
-import com.example.domain.repository.settings.AppSettingsRepository
+import com.example.domain.model.*
+import com.example.domain.usecase.settings.GetAppSettingsUseCase
+import com.example.domain.usecase.settings.UpdateAppSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val appSettingsRepository: AppSettingsRepository
+    private val getAppSettingsUseCase: GetAppSettingsUseCase,
+    private val updateAppSettingsUseCase: UpdateAppSettingsUseCase
 ) : ViewModel() {
 
-    val appSettings: StateFlow<AppSettings> = appSettingsRepository.appSettingsFlow
+    val appSettings: StateFlow<AppSettings> = getAppSettingsUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -30,44 +27,43 @@ class SettingsViewModel @Inject constructor(
 
     fun updateTemperatureUnit(unit: TemperatureUnit) {
         viewModelScope.launch {
-            appSettingsRepository.updateTemperatureUnit(unit)
+            updateAppSettingsUseCase.updateTemperatureUnit(unit)
         }
     }
 
     fun updateWindSpeedUnit(unit: WindSpeedUnit) {
         viewModelScope.launch {
-            appSettingsRepository.updateWindSpeedUnit(unit)
+            updateAppSettingsUseCase.updateWindSpeedUnit(unit)
         }
     }
 
     fun updatePressureUnit(unit: PressureUnit) {
         viewModelScope.launch {
-            appSettingsRepository.updatePressureUnit(unit)
+            updateAppSettingsUseCase.updatePressureUnit(unit)
         }
     }
 
     fun updateNotificationsEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            appSettingsRepository.updateNotificationsEnabled(enabled)
+            updateAppSettingsUseCase.updateNotificationsEnabled(enabled)
         }
     }
 
     fun updateTimeFormat(format: TimeFormat) {
         viewModelScope.launch {
-            appSettingsRepository.updateTimeFormat(format)
+            updateAppSettingsUseCase.updateTimeFormat(format)
         }
     }
 
     fun updateLocationEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            appSettingsRepository.updateLocationEnabled(enabled)
+            updateAppSettingsUseCase.updateLocationEnabled(enabled)
         }
     }
 
     fun updateThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
-            appSettingsRepository.updateThemeMode(mode)
+            updateAppSettingsUseCase.updateThemeMode(mode)
         }
     }
-
 }

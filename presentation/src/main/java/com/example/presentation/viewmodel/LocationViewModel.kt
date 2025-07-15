@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.location.GetCityNameUseCase
 import com.example.domain.usecase.location.GetCurrentLocationUseCase
 import com.example.domain.usecase.location.HasLocationPermissionUseCase
-import com.example.domain.usecase.location.UpdateLocationEnabledUseCase
 import com.example.domain.usecase.settings.GetAppSettingsUseCase
+import com.example.domain.usecase.settings.UpdateLocationEnabledUseCase
 import com.example.presentation.state.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
