@@ -20,9 +20,12 @@ fun HourlyForecast(
     hourly: List<HourlyWeatherDisplayData>,
     listState: LazyListState
 ) {
-    val limitedHourly = hourly.take(10)
-    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp)) {
-        items(limitedHourly) { hour ->
+
+    LazyRow(
+        state = listState,
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(hourly) { hour ->
             Column(
                 modifier = Modifier.padding(end = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

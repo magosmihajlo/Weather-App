@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val getAppSettingsUseCase: GetAppSettingsUseCase,
+    getAppSettingsUseCase: GetAppSettingsUseCase,
     private val getWeatherUseCase: GetWeatherUseCase,
     private val saveRecentCityUseCase: SaveRecentCityUseCase,
     private val getForecastUseCase: GetForecastUseCase,

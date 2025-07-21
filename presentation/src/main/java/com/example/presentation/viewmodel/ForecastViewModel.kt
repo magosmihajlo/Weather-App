@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,25 +38,12 @@ class ForecastViewModel @Inject constructor(
     private val _dailyDisplayState = MutableStateFlow<List<DailyWeatherDisplayData>>(emptyList())
     val dailyDisplayState: StateFlow<List<DailyWeatherDisplayData>> = _dailyDisplayState
 
-    private val settingsFlow: SharedFlow<AppSettings> = getAppSettingsUseCase()
-        .distinctUntilChanged()
-        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000), replay = 1)
-
-
     private var latestForecast: WeatherForecast? = null
     private var latestWeatherInfo: WeatherInfo? = null
 
-    private fun updateMappedForecast(forecast: WeatherForecast, weatherInfo: WeatherInfo) {
-        viewModelScope.launch {
-            val settings = settingsFlow.first()
-            _hourlyDisplayState.value = mapHourlyForecastUseCase(
-                forecast.hourly, weatherInfo.timezoneOffsetSeconds, settings
-            )
-            _dailyDisplayState.value = mapDailyForecastUseCase(
-                forecast.daily, weatherInfo.timezoneOffsetSeconds, settings
-            )
-        }
-    }
+    private val settingsFlow: SharedFlow<AppSettings> = getAppSettingsUseCase()
+        .distinctUntilChanged()
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000), replay = 1)
 
     init {
         settingsFlow.onEach { settings ->
@@ -90,4 +79,8 @@ class ForecastViewModel @Inject constructor(
             forecast.daily, info.timezoneOffsetSeconds, settings
         )
     }
+
+    val limitedHourlyDisplayState: StateFlow<List<HourlyWeatherDisplayData>> =
+        hourlyDisplayState.map { it.take(10) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }

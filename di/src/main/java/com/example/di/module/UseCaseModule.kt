@@ -6,14 +6,10 @@ import com.example.domain.repository.display.ForecastDisplayRepository
 import com.example.domain.repository.location.LocationProvider
 import com.example.domain.repository.display.RecentCityDisplayRepository
 import com.example.domain.repository.database.RecentCityRepository
-import com.example.domain.repository.settings.UnitConversionRepository
 import com.example.domain.repository.display.WeatherDisplayRepository
 import com.example.domain.repository.api.WeatherRepository
 import com.example.domain.repository.database.UpdateCitiesRepository
 import com.example.domain.usecase.UpdateCitiesUseCase
-import com.example.domain.usecase.settings.ConvertPressureUseCase
-import com.example.domain.usecase.settings.ConvertTemperatureUseCase
-import com.example.domain.usecase.settings.ConvertWindSpeedUseCase
 import com.example.domain.usecase.settings.GetAppSettingsUseCase
 import com.example.domain.usecase.location.GetCityNameUseCase
 import com.example.domain.usecase.location.GetCurrentLocationUseCase
@@ -24,6 +20,7 @@ import com.example.domain.usecase.display.MapHourlyForecastUseCase
 import com.example.domain.usecase.display.MapRecentCitiesUseCase
 import com.example.domain.usecase.display.MapWeatherUseCase
 import com.example.domain.usecase.database.SaveRecentCityUseCase
+import com.example.domain.usecase.location.HasLocationPermissionUseCase
 import com.example.domain.usecase.settings.UpdateAppSettingsUseCase
 import dagger.Module
 import dagger.Provides
@@ -56,24 +53,6 @@ object UseCaseModule {
     ): GetRecentCitiesUseCase {
         return GetRecentCitiesUseCase(recentCityRepository)
     }
-
-    @Provides
-    @Singleton
-    fun provideConvertTemperatureUseCase(
-        repo: UnitConversionRepository
-    ): ConvertTemperatureUseCase = ConvertTemperatureUseCase(repo)
-
-    @Provides
-    @Singleton
-    fun provideConvertWindSpeedUseCase(
-        repo: UnitConversionRepository
-    ): ConvertWindSpeedUseCase = ConvertWindSpeedUseCase(repo)
-
-    @Provides
-    @Singleton
-    fun provideConvertPressureUseCase(
-        repo: UnitConversionRepository
-    ): ConvertPressureUseCase = ConvertPressureUseCase(repo)
 
     @Provides
     @Singleton
@@ -133,6 +112,12 @@ object UseCaseModule {
     fun provideUpdateAppSettingsUseCase(
         appSettingsRepository: AppSettingsRepository
     ): UpdateAppSettingsUseCase = UpdateAppSettingsUseCase(appSettingsRepository)
+
+    @Provides
+    @Singleton
+    fun provideHasLocationPermissionUseCase(
+        locationProvider: LocationProvider
+    ): HasLocationPermissionUseCase = HasLocationPermissionUseCase(locationProvider)
 
 }
 

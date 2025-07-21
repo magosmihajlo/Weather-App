@@ -34,7 +34,7 @@ fun MainScreen(
     locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
     val uiState by weatherViewModel.uiState.collectAsStateWithLifecycle()
-    val hourlyDisplay by forecastViewModel.hourlyDisplayState.collectAsStateWithLifecycle()
+    val hourlyDisplay by forecastViewModel.limitedHourlyDisplayState.collectAsStateWithLifecycle()
     val dailyDisplay by forecastViewModel.dailyDisplayState.collectAsStateWithLifecycle()
     val hourlyScrollState = rememberLazyListState()
 
